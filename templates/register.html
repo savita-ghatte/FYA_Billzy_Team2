@@ -1,52 +1,359 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% block title %}Register | Billzy{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card shadow-sm">
-      <div class="card-body p-4">
-        <h3 class="mb-3">Register your Shop</h3>
-        <form method="POST">
-          <div class="mb-3">
-            <label class="form-label">Your Name</label>
-            <input type="text" name="name" class="form-control" required>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" name="email" class="form-control" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Phone</label>
-              <input type="text" name="phone" class="form-control">
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" required>
-          </div>
-          <hr>
-          <div class="mb-3">
-            <label class="form-label">Shop Name</label>
-            <input type="text" name="shop_name" class="form-control" required>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">State</label>
-              <input type="text" name="state" class="form-control" placeholder="e.g. Maharashtra" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">GSTIN / TIN</label>
-              <input type="text" name="gstin" class="form-control">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary w-100">Register</button>
-        </form>
-        <p class="mt-3 mb-0 text-center">
-          Already registered? <a href="{{ url_for('auth.login') }}">Login</a>
-        </p>
-      </div>
-    </div>
-  </div>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
+    min-height:100vh;
+}
+
+.register-container{
+    min-height:90vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 0;
+}
+
+.register-card{
+
+    width:100%;
+    max-width:850px;
+    border:none;
+    border-radius:22px;
+    background:rgba(255,255,255,.97);
+    box-shadow:0 25px 60px rgba(0,0,0,.25);
+
+}
+
+.card-body{
+    padding:45px;
+}
+
+.logo{
+
+    width:90px;
+    height:90px;
+    background:#8075d4;
+    color:white;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:auto;
+    font-size:42px;
+    margin-bottom:20px;
+
+}
+
+.section-title{
+
+    font-weight:700;
+    color:#8075d4;
+    margin:30px 0 18px;
+    border-left:4px solid #8075d4;
+    padding-left:12px;
+
+}
+
+.input-group-text{
+
+    background:#f8f9fa;
+    border-radius:12px 0 0 12px;
+
+}
+
+.form-control{
+
+    height:52px;
+    border-radius:0 12px 12px 0;
+
+}
+
+.form-control:focus{
+
+    border-color:#2563eb;
+    box-shadow:0 0 12px rgba(37,99,235,.2);
+
+}
+
+.btn-register{
+
+    height:55px;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:600;
+    transition:.3s;
+
+}
+
+.btn-register:hover{
+
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(37,99,235,.35);
+
+}
+
+.footer-text{
+
+    text-align:center;
+    margin-top:20px;
+
+}
+
+.footer-text a{
+
+    text-decoration:none;
+    font-weight:600;
+
+}
+
+.footer-text a:hover{
+
+    text-decoration:underline;
+
+}
+
+</style>
+
+<div class="container register-container">
+
+<div class="card register-card">
+
+<div class="card-body">
+
+<div class="logo">
+
+<i class="bi bi-shop"></i>
+
 </div>
+
+<h2 class="text-center fw-bold">
+Create Your Business Account
+</h2>
+
+<p class="text-center text-muted">
+Register your shop and start managing inventory & billing professionally.
+</p>
+
+<form method="POST">
+
+<h5 class="section-title">Owner Information</h5>
+
+<div class="mb-3">
+
+<label class="form-label">Full Name</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+<i class="bi bi-person"></i>
+</span>
+
+<input
+type="text"
+name="name"
+class="form-control"
+placeholder="Enter your full name"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label>Email</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+<i class="bi bi-envelope"></i>
+</span>
+
+<input
+type="email"
+name="email"
+class="form-control"
+placeholder="example@email.com"
+required>
+
+</div>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Phone</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+<i class="bi bi-telephone"></i>
+</span>
+
+<input
+type="text"
+name="phone"
+class="form-control"
+placeholder="+91 9876543210">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label>Password</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+<i class="bi bi-lock"></i>
+</span>
+
+<input
+type="password"
+id="password"
+name="password"
+class="form-control"
+placeholder="Create a secure password"
+required>
+
+<button
+class="btn btn-outline-secondary"
+type="button"
+onclick="togglePassword()">
+
+<i class="bi bi-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<h5 class="section-title">
+Business Information
+</h5>
+
+<div class="mb-3">
+
+<label>Shop Name</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+<i class="bi bi-shop"></i>
+</span>
+
+<input
+type="text"
+name="shop_name"
+class="form-control"
+placeholder="Enter shop name"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label>State</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+<i class="bi bi-geo-alt"></i>
+</span>
+
+<input
+type="text"
+name="state"
+class="form-control"
+placeholder="Maharashtra"
+required>
+
+</div>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>GSTIN / TIN</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+<i class="bi bi-receipt"></i>
+</span>
+
+<input
+type="text"
+name="gstin"
+class="form-control"
+placeholder="Optional">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="d-grid mt-4">
+
+<button
+class="btn btn-primary btn-register">
+
+<i class="bi bi-person-plus-fill"></i>
+
+Create Account
+
+</button>
+
+</div>
+
+</form>
+
+<div class="footer-text">
+
+Already have an account?
+
+<a href="{{ url_for('auth.login') }}">
+Login
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function togglePassword(){
+
+const password=document.getElementById("password");
+
+password.type=password.type==="password"?"text":"password";
+
+}
+
+</script>
+
 {% endblock %}
