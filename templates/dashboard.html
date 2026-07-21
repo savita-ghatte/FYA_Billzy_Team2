@@ -1,318 +1,65 @@
 {% extends "base.html" %}
-{% block title %}Login | Billzy{% endblock %}
-
+{% block title %}Dashboard{% endblock %}
 {% block content %}
 
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<style>
-
-body{
-    background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
-    min-height:100vh;
-}
-
-.login-container{
-    min-height:90vh;
-    display:flex;
-    align-items:center;
-}
-
-.left-side{
-    color:white;
-    padding:50px;
-}
-
-.brand{
-    font-size:48px;
-    font-weight:700;
-}
-
-.brand span{
-    color:#60a5fa;
-}
-
-.tagline{
-    font-size:18px;
-    opacity:.9;
-    line-height:32px;
-    margin-top:20px;
-}
-
-.features{
-    margin-top:40px;
-}
-
-.features p{
-    font-size:17px;
-    margin-bottom:18px;
-}
-
-.login-card{
-
-    background:rgba(255,255,255,.95);
-    border-radius:20px;
-    border:none;
-    box-shadow:0 25px 60px rgba(0,0,0,.25);
-    overflow:hidden;
-
-}
-
-.card-body{
-    padding:45px;
-}
-
-.avatar{
-
-    width:90px;
-    height:90px;
-    background:#8075d4;
-    color:white;
-    margin:auto;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:42px;
-    margin-bottom:20px;
-
-}
-
-.form-control{
-
-    height:55px;
-    border-radius:12px;
-
-}
-
-.input-group-text{
-
-    border-radius:12px 0 0 12px;
-
-}
-
-.form-control:focus{
-
-    box-shadow:0 0 12px rgba(37,99,235,.25);
-
-}
-
-.btn-login{
-
-    height:55px;
-    border-radius:12px;
-    font-size:18px;
-    font-weight:600;
-    transition:.3s;
-
-}
-
-.btn-login:hover{
-
-    transform:translateY(-2px);
-    box-shadow:0 12px 25px rgba(37,99,235,.35);
-
-}
-
-.footer-link{
-
-    text-align:center;
-    margin-top:20px;
-
-}
-
-.footer-link a{
-
-    text-decoration:none;
-    font-weight:600;
-
-}
-
-.footer-link a:hover{
-
-    text-decoration:underline;
-
-}
-
-@media(max-width:768px){
-
-.left-side{
-
-display:none;
-
-}
-
-}
-
-</style>
-
-<div class="container login-container">
-
-<div class="row w-100 align-items-center">
-
-<div class="col-lg-6 left-side">
-
-<h1 class="brand">
-Bill<span>zy</span>
-</h1>
-
-<p class="tagline">
-
-Smart Inventory & Billing Management System for Local Businesses.
-
-Manage products, sales, invoices and customers from one place.
-
-</p>
-
-<div class="features">
-
-<p>✔ Inventory Management</p>
-
-<p>✔ Fast GST Billing</p>
-
-<p>✔ Sales Reports</p>
-
-<p>✔ Customer Management</p>
-
-<p>✔ Secure Cloud Access</p>
-
-</div>
-
-</div>
-
-<div class="col-lg-5 offset-lg-1">
-
-<div class="card login-card">
-
-<div class="card-body">
-
-<div class="avatar">
-
-<i class="bi bi-shop"></i>
-
-</div>
-
-<h2 class="text-center fw-bold">
-Welcome Back
-</h2>
-
-<p class="text-center text-muted mb-4">
-Sign in to continue to Billzy
-</p>
-
-<form method="POST">
-
-<div class="mb-3">
-
-<label class="form-label fw-semibold">
-Email
-</label>
-
-<div class="input-group">
-
-<span class="input-group-text">
-<i class="bi bi-envelope"></i>
-</span>
-
-<input
-type="email"
-class="form-control"
-name="email"
-placeholder="Enter your email"
-required>
-
-</div>
-
-</div>
-
-<div class="mb-4">
-
-<label class="form-label fw-semibold">
-Password
-</label>
-
-<div class="input-group">
-
-<span class="input-group-text">
-<i class="bi bi-lock"></i>
-</span>
-
-<input
-type="password"
-id="password"
-class="form-control"
-name="password"
-placeholder="Enter your password"
-required>
-
-<button
-type="button"
-class="btn btn-outline-secondary"
-onclick="togglePassword()">
-
-<i class="bi bi-eye"></i>
-
-</button>
-
-</div>
-
-</div>
-
-<div class="d-grid">
-
-<button class="btn btn-primary btn-login">
-
-<i class="bi bi-box-arrow-in-right"></i>
-
-Login
-
-</button>
-
-</div>
-
-</form>
-
-<div class="footer-link">
-
-New Business?
-
-<a href="{{ url_for('auth.register') }}">
-
-Register Your Shop
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-function togglePassword(){
-
-let x=document.getElementById("password");
-
-if(x.type==="password"){
-
-x.type="text";
-
-}else{
-
-x.type="password";
-
-}
-
-}
-
-</script>
-
+{% if super_admin %}
+  <h3>Super Admin Console</h3>
+  <p class="text-muted">Platform-wide settings and global logs would appear here.</p>
+{% else %}
+  <h3>Dashboard</h3>
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Active Products</div>
+          <div class="fs-2 fw-bold">{{ total_products }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Low Stock Alerts</div>
+          <div class="fs-2 fw-bold {% if low_stock_items %}text-danger{% endif %}">{{ low_stock_items|length }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Recent Sales</div>
+          <div class="fs-2 fw-bold">{{ recent_sales|length }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if low_stock_items %}
+  <div class="alert alert-warning">
+    <strong>⚠ Low Stock Alert (FR-3.3):</strong>
+    <ul class="mb-0">
+      {% for p in low_stock_items %}
+      <li>{{ p.name }} — {{ p.stock_qty }} left (min threshold {{ p.min_threshold }})</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <h5 class="mt-4">Recent Sales</h5>
+  <table class="table table-sm table-striped">
+    <thead><tr><th>#</th><th>Time</th><th>Total</th><th>Payment</th></tr></thead>
+    <tbody>
+      {% for s in recent_sales %}
+      <tr>
+        <td><a href="{{ url_for('billing.invoice', sale_id=s.id) }}">#{{ s.id }}</a></td>
+        <td>{{ s.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>₹{{ "%.2f"|format(s.total) }}</td>
+        <td>{{ s.payment_mode }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-muted">No sales yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
 {% endblock %}
