@@ -1,0 +1,15 @@
+body {
+    background-color: #a7b9de;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.table-danger {
+    --bs-table-bg: #fdecea;
+}
+
+@media print {
+    .navbar, .btn, form { display: none !important; }
+}

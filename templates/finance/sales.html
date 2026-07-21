@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Sales Ledger{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Sales Ledger</h3>
+  <a href="{{ url_for('finance.tax_report') }}" class="btn btn-outline-primary">Download Tax Report (CSV)</a>
+</div>
+<table class="table table-striped">
+  <thead><tr><th>#</th><th>Date</th><th>Subtotal</th><th>Tax</th><th>Discount</th><th>Total</th><th>Payment</th><th>Cashier</th></tr></thead>
+  <tbody>
+    {% for s in sales %}
+    <tr>
+      <td><a href="{{ url_for('billing.invoice', sale_id=s.id) }}">#{{ s.id }}</a></td>
+      <td>{{ s.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>₹{{ "%.2f"|format(s.subtotal) }}</td>
+      <td>₹{{ "%.2f"|format(s.tax_total) }}</td>
+      <td>₹{{ "%.2f"|format(s.discount) }}</td>
+      <td class="fw-bold">₹{{ "%.2f"|format(s.total) }}</td>
+      <td>{{ s.payment_mode }}</td>
+      <td>{{ s.operator.name }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8" class="text-muted">No sales recorded yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Inventory{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Inventory</h3>
+  {% if current_user.can('inventory', 'write') %}
+  <a href="{{ url_for('inventory.new_product') }}" class="btn btn-primary">+ Add Product</a>
+  {% endif %}
+</div>
+
+<table class="table table-striped align-middle">
+  <thead>
+    <tr>
+      <th>Name</th><th>Category</th><th>Cost</th><th>Price</th>
+      <th>Tax %</th><th>Stock</th><th>Batch</th><th>Expiry</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in products %}
+    <tr class="{{ 'table-danger' if p.low_stock else '' }}">
+      <td>{{ p.name }}</td>
+      
+      <td>{{ p.category }}</td>
+      <td>₹{{ "%.2f"|format(p.cost_price) }}</td>
+      <td>₹{{ "%.2f"|format(p.selling_price) }}</td>
+      <td>{{ p.tax_rate }}%</td>
+      <td>{{ p.stock_qty }} {% if p.low_stock %}<span class="badge bg-danger">Low</span>{% endif %}</td>
+      <td>{{ p.batch_no or "—" }}</td>
+      <td>{{ p.expiry_date or "—" }}</td>
+      <td>
+        {% if current_user.can('inventory', 'write') %}
+        <a href="{{ url_for('inventory.edit_product', product_id=p.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+        <form method="POST" action="{{ url_for('inventory.archive_product', product_id=p.id) }}" class="d-inline"
+              onsubmit="return confirm('Archive this product?');">
+          <button class="btn btn-sm btn-outline-danger">Archive</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="10" class="text-muted">No products yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

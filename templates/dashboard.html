@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+{% if super_admin %}
+  <h3>Super Admin Console</h3>
+  <p class="text-muted">Platform-wide settings and global logs would appear here.</p>
+{% else %}
+  <h3>Dashboard</h3>
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Active Products</div>
+          <div class="fs-2 fw-bold">{{ total_products }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Low Stock Alerts</div>
+          <div class="fs-2 fw-bold {% if low_stock_items %}text-danger{% endif %}">{{ low_stock_items|length }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="text-muted small">Recent Sales</div>
+          <div class="fs-2 fw-bold">{{ recent_sales|length }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if low_stock_items %}
+  <div class="alert alert-warning">
+    <strong>⚠ Low Stock Alert (FR-3.3):</strong>
+    <ul class="mb-0">
+      {% for p in low_stock_items %}
+      <li>{{ p.name }} — {{ p.stock_qty }} left (min threshold {{ p.min_threshold }})</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <h5 class="mt-4">Recent Sales</h5>
+  <table class="table table-sm table-striped">
+    <thead><tr><th>#</th><th>Time</th><th>Total</th><th>Payment</th></tr></thead>
+    <tbody>
+      {% for s in recent_sales %}
+      <tr>
+        <td><a href="{{ url_for('billing.invoice', sale_id=s.id) }}">#{{ s.id }}</a></td>
+        <td>{{ s.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>₹{{ "%.2f"|format(s.total) }}</td>
+        <td>{{ s.payment_mode }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-muted">No sales yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}

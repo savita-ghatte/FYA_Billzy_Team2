@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Staff Management{% endblock %}
+{% block content %}
+<h3>Staff Management</h3>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <h5>Add Staff Member</h5>
+    <form method="POST" class="row g-2">
+      <input type="hidden" name="action" value="create">
+      <div class="col-md-3"><input class="form-control" name="name" placeholder="Name" required></div>
+      <div class="col-md-3"><input class="form-control" type="email" name="email" placeholder="Email" required></div>
+      <div class="col-md-2"><input class="form-control" type="password" name="password" placeholder="Password" required></div>
+      <div class="col-md-2">
+        <select class="form-select" name="role" required>
+          <option value="store_manager">Store Manager</option>
+          <option value="billing_operator">Billing Operator</option>
+        </select>
+      </div>
+      <div class="col-md-2"><button class="btn btn-primary w-100">Add</button></div>
+    </form>
+  </div>
+</div>
+
+<table class="table table-striped">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+    {% for s in staff_members %}
+    <tr>
+      <td>{{ s.name }}</td>
+      <td>{{ s.email }}</td>
+      <td>{{ s.role.replace('_',' ').title() }}</td>
+      <td>
+        {% if s.is_active_flag %}<span class="badge bg-success">Active</span>
+        {% else %}<span class="badge bg-secondary">Deactivated</span>{% endif %}
+      </td>
+      <td>
+        <form method="POST" class="d-inline">
+          <input type="hidden" name="action" value="toggle">
+          <input type="hidden" name="staff_id" value="{{ s.id }}">
+          <button class="btn btn-sm btn-outline-secondary">
+            {{ "Deactivate" if s.is_active_flag else "Activate" }}
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-muted">No staff added yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

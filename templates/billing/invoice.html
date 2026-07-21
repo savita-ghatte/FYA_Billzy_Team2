@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Invoice #{{ sale.id }}{% endblock %}
+{% block content %}
+<div class="card border-0 shadow-sm mx-auto" style="max-width: 500px;">
+  <div class="card-body">
+    <h4 class="text-center mb-1">{{ sale.shop.name }}</h4>
+    <p class="text-center text-muted mb-3">{{ sale.shop.state }} {% if sale.shop.gstin %}· GSTIN: {{ sale.shop.gstin }}{% endif %}</p>
+    <hr>
+    <p class="mb-1"><strong>Invoice #</strong> {{ sale.id }}</p>
+    <p class="mb-1"><strong>Date:</strong> {{ sale.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p class="mb-3"><strong>Cashier:</strong> {{ sale.operator.name }}</p>
+
+    <table class="table table-sm">
+      <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Tax%</th><th>Line Total</th></tr></thead>
+      <tbody>
+        {% for item in sale.items %}
+        <tr>
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.qty }}</td>
+          <td>₹{{ "%.2f"|format(item.price_at_sale) }}</td>
+          <td>{{ item.tax_rate_at_sale }}%</td>
+          <td>₹{{ "%.2f"|format(item.qty * item.price_at_sale * (1 + item.tax_rate_at_sale/100)) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p class="mb-1">Subtotal: ₹{{ "%.2f"|format(sale.subtotal) }}</p>
+    <p class="mb-1">Tax: ₹{{ "%.2f"|format(sale.tax_total) }}</p>
+    <p class="mb-1">Discount: ₹{{ "%.2f"|format(sale.discount) }}</p>
+    <p class="fw-bold fs-5">Total: ₹{{ "%.2f"|format(sale.total) }}</p>
+    <p class="text-muted">Payment Mode: {{ sale.payment_mode }}</p>
+
+    <div class="text-center mt-3">
+      <button class="btn btn-outline-primary btn-sm" onclick="window.print()">Print Receipt</button>
+      <a href="{{ url_for('billing.pos') }}" class="btn btn-primary btn-sm">New Sale</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

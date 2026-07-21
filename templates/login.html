@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<style>
+  .login-wrapper {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-card {
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    overflow: hidden;
+    max-width: 420px;
+    width: 100%;
+  }
+  .login-banner {
+    background: linear-gradient(135deg, #4e6ef2, #7c3aed);
+    color: #fff;
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+  }
+  .login-banner h2 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .login-banner p {
+    opacity: 0.85;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+  .login-body {
+    padding: 2rem;
+  }
+  .login-body .btn-primary {
+    background: linear-gradient(135deg, #4e6ef2, #7c3aed);
+    border: none;
+    padding: 0.65rem;
+    font-weight: 600;
+  }
+  .login-body .form-control {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+  }
+</style>
+
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-banner">
+      <h2>Billzy</h2>
+      <p>Smart Billing & Inventory, made simple</p>
+    </div>
+    <div class="login-body">
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" required autofocus placeholder="you@example.com">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
+      <p class="mt-3 mb-0 text-center">
+        New Businessman? <a href="{{ url_for('auth.register') }}">Register your shop</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
