@@ -1,52 +1,337 @@
 {% extends "base.html" %}
-{% block title %}{{ "Edit" if product else "Add" }} Product{% endblock %}
+{% block title %}
+{{ "Edit Product" if product else "Add Product" }}
+{% endblock %}
+
 {% block content %}
-<h3>{{ "Edit" if product else "Add" }} Product</h3>
-<form method="POST" class="row g-3">
-  <div class="col-md-6">
-    <label class="form-label">Name</label>
-    <input class="form-control" name="name" value="{{ product.name if product else '' }}" required>
-  </div>
-  
-  <div class="col-md-3">
-    <label class="form-label">Category</label>
-    <input class="form-control" name="category" value="{{ product.category if product else '' }}">
-  </div>
 
-  <div class="col-md-3">
-    <label class="form-label">Cost Price (₹)</label>
-    <input class="form-control" type="number" step="0.01" name="cost_price" value="{{ product.cost_price if product else 0 }}" required>
-  </div>
-  <div class="col-md-3">
-    <label class="form-label">Selling Price (₹)</label>
-    <input class="form-control" type="number" step="0.01" name="selling_price" value="{{ product.selling_price if product else 0 }}" required>
-  </div>
-  <div class="col-md-3">
-    <label class="form-label">Tax Rate (%)</label>
-    <input class="form-control" type="number" step="0.01" name="tax_rate" value="{{ product.tax_rate if product else 0 }}" required>
-  </div>
-  <div class="col-md-3">
-    <label class="form-label">Min Stock Threshold</label>
-    <input class="form-control" type="number" name="min_threshold" value="{{ product.min_threshold if product else 5 }}" required>
-  </div>
+<div class="container-fluid">
 
-  <div class="col-md-4">
-    <label class="form-label">Stock Quantity</label>
-    <input class="form-control" type="number" name="stock_qty" value="{{ product.stock_qty if product else 0 }}" required>
-  </div>
-  <div class="col-md-4">
-    <label class="form-label">Batch Number</label>
-    <input class="form-control" name="batch_no" value="{{ product.batch_no if product else '' }}">
-  </div>
-  <div class="col-md-4">
-    <label class="form-label">Expiry Date</label>
-    <input class="form-control" type="date" name="expiry_date"
-           value="{{ product.expiry_date.isoformat() if product and product.expiry_date else '' }}">
-  </div>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-  <div class="col-12">
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="{{ url_for('inventory.list_products') }}" class="btn btn-outline-secondary">Cancel</a>
-  </div>
-</form>
+        <div>
+
+            <h2 class="fw-bold">
+                <i class="bi bi-box-seam text-primary"></i>
+
+                {{ "Edit Product" if product else "Add Product" }}
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Fill in the product details below.
+
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('inventory.list_products') }}"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Inventory
+
+        </a>
+
+    </div>
+
+
+
+    <form method="POST">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-pencil-square"></i>
+
+                    Product Information
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <!-- Product Name -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+
+                            Product Name
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="name"
+                            value="{{ product.name if product else '' }}"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- SKU -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            SKU / Barcode
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="sku"
+                            value="{{ product.sku if product else '' }}"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- Category -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Category
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="category"
+                            value="{{ product.category if product else '' }}"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- Cost -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Cost Price (₹)
+
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="form-control"
+                            name="cost"
+                            value="{{ product.cost if product else 0 }}"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- Selling -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Selling Price (₹)
+
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="form-control"
+                            name="price"
+                            value="{{ product.price if product else 0 }}"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- Tax -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Tax (%)
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="tax_rate"
+                            value="{{ product.tax_rate if product else 0 }}">
+
+                    </div>
+
+
+
+                    <!-- Min Stock -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Minimum Stock
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="min_stock"
+                            value="{{ product.min_stock if product else 5 }}">
+
+                    </div>
+
+
+
+                    <!-- Quantity -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Stock Quantity
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="stock"
+                            value="{{ product.stock if product else 0 }}">
+
+                    </div>
+
+
+
+                    <!-- Batch -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Batch Number
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="batch"
+                            value="{{ product.batch if product else '' }}">
+
+                    </div>
+
+
+
+                    <!-- Expiry -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Expiry Date
+
+                        </label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="expiry_date"
+                            value="{{ product.expiry_date if product else '' }}">
+
+                    </div>
+
+
+
+                    <!-- Description -->
+
+                    <div class="col-12">
+
+                        <label class="form-label fw-semibold">
+
+                            Product Description
+
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            rows="4"
+                            name="description"
+                            placeholder="Optional description...">{{ product.description if product else '' }}</textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Footer -->
+
+            <div class="card-footer bg-white">
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="{{ url_for('inventory.list_products') }}"
+                       class="btn btn-outline-secondary">
+
+                        <i class="bi bi-x-circle"></i>
+
+                        Cancel
+
+                    </a>
+
+                    <button type="reset"
+                            class="btn btn-outline-warning">
+
+                        <i class="bi bi-arrow-counterclockwise"></i>
+
+                        Reset
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        <i class="bi bi-check-circle"></i>
+
+                        {{ "Update Product" if product else "Save Product" }}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
 {% endblock %}
