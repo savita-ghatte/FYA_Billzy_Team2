@@ -1,27 +1,452 @@
 {% extends "base.html" %}
 {% block title %}Sales Ledger{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h3>Sales Ledger</h3>
-  <a href="{{ url_for('finance.tax_report') }}" class="btn btn-outline-primary">Download Tax Report (CSV)</a>
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold">
+                <i class="bi bi-receipt-cutoff text-primary"></i>
+                Sales Ledger
+            </h2>
+
+            <p class="text-muted mb-0">
+                Track all sales, revenue and payment history.
+            </p>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <button class="btn btn-outline-success">
+                <i class="bi bi-download"></i>
+                Export CSV
+            </button>
+
+            <button class="btn btn-primary">
+                <i class="bi bi-printer"></i>
+                Print Report
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Summary Cards -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+                                Total Sales
+                            </small>
+
+                            <h3 class="fw-bold">
+
+                                {{ sales|length }}
+
+                            </h3>
+
+                        </div>
+
+                        <i class="bi bi-cart-check text-primary fs-1"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Revenue
+
+                            </small>
+
+                            <h3 class="fw-bold">
+
+                                ₹ {{ revenue }}
+
+                            </h3>
+
+                        </div>
+
+                        <i class="bi bi-currency-rupee text-success fs-1"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Tax Collected
+
+                            </small>
+
+                            <h3 class="fw-bold">
+
+                                ₹ {{ tax }}
+
+                            </h3>
+
+                        </div>
+
+                        <i class="bi bi-percent text-warning fs-1"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-lg-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Discounts
+
+                            </small>
+
+                            <h3 class="fw-bold">
+
+                                ₹ {{ discount }}
+
+                            </h3>
+
+                        </div>
+
+                        <i class="bi bi-tag text-danger fs-1"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Filters -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Search Invoice or Cashier">
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <input
+                            type="date"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <select class="form-select">
+
+                            <option>All Payment Modes</option>
+
+                            <option>Cash</option>
+
+                            <option>UPI</option>
+
+                            <option>Card</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-2 d-grid">
+
+                        <button class="btn btn-primary">
+
+                            <i class="bi bi-search"></i>
+
+                            Search
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Sales Table -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-table"></i>
+
+                    Sales History
+
+                </h5>
+
+                <span class="badge bg-primary">
+
+                    {{ sales|length }} Records
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Date</th>
+
+                        <th>Invoice</th>
+
+                        <th>Subtotal</th>
+
+                        <th>Tax</th>
+
+                        <th>Discount</th>
+
+                        <th>Total</th>
+
+                        <th>Payment</th>
+
+                        <th>Cashier</th>
+
+                        <th width="120">
+
+                            Action
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if sales %}
+
+                    {% for sale in sales %}
+
+                    <tr>
+
+                        <td>{{ sale.id }}</td>
+
+                        <td>{{ sale.created_at }}</td>
+
+                        <td>#INV{{ sale.id }}</td>
+
+                        <td>₹ {{ sale.subtotal }}</td>
+
+                        <td>₹ {{ sale.tax }}</td>
+
+                        <td>₹ {{ sale.discount }}</td>
+
+                        <td>
+
+                            <strong>
+
+                                ₹ {{ sale.total }}
+
+                            </strong>
+
+                        </td>
+
+                        <td>
+                                                  <td>
+
+                            {% if sale.payment_mode == "Cash" %}
+
+                                <span class="badge bg-success">
+
+                                    Cash
+
+                                </span>
+
+                            {% elif sale.payment_mode == "UPI" %}
+
+                                <span class="badge bg-primary">
+
+                                    UPI
+
+                                </span>
+
+                            {% elif sale.payment_mode == "Card" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    Card
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    {{ sale.payment_mode }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {{ sale.cashier }}
+
+                        </td>
+
+                        <td>
+
+                            <div class="btn-group">
+
+                                <button class="btn btn-sm btn-outline-primary">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-success">
+
+                                    <i class="bi bi-printer"></i>
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="10" class="text-center py-5">
+
+                            <i class="bi bi-receipt-cutoff display-1 text-secondary"></i>
+
+                            <h4 class="mt-3">
+
+                                No Sales Found
+
+                            </h4>
+
+                            <p class="text-muted">
+
+                                Completed sales will appear here.
+
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
 </div>
-<table class="table table-striped">
-  <thead><tr><th>#</th><th>Date</th><th>Subtotal</th><th>Tax</th><th>Discount</th><th>Total</th><th>Payment</th><th>Cashier</th></tr></thead>
-  <tbody>
-    {% for s in sales %}
-    <tr>
-      <td><a href="{{ url_for('billing.invoice', sale_id=s.id) }}">#{{ s.id }}</a></td>
-      <td>{{ s.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-      <td>₹{{ "%.2f"|format(s.subtotal) }}</td>
-      <td>₹{{ "%.2f"|format(s.tax_total) }}</td>
-      <td>₹{{ "%.2f"|format(s.discount) }}</td>
-      <td class="fw-bold">₹{{ "%.2f"|format(s.total) }}</td>
-      <td>{{ s.payment_mode }}</td>
-      <td>{{ s.operator.name }}</td>
-    </tr>
-    {% else %}
-    <tr><td colspan="8" class="text-muted">No sales recorded yet.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+
 {% endblock %}
