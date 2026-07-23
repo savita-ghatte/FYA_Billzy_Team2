@@ -1,40 +1,130 @@
 {% extends "base.html" %}
 {% block title %}Invoice #{{ sale.id }}{% endblock %}
-{% block content %}
-<div class="card border-0 shadow-sm mx-auto" style="max-width: 500px;">
-  <div class="card-body">
-    <h4 class="text-center mb-1">{{ sale.shop.name }}</h4>
-    <p class="text-center text-muted mb-3">{{ sale.shop.state }} {% if sale.shop.gstin %}· GSTIN: {{ sale.shop.gstin }}{% endif %}</p>
-    <hr>
-    <p class="mb-1"><strong>Invoice #</strong> {{ sale.id }}</p>
-    <p class="mb-1"><strong>Date:</strong> {{ sale.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
-    <p class="mb-3"><strong>Cashier:</strong> {{ sale.operator.name }}</p>
 
-    <table class="table table-sm">
-      <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Tax%</th><th>Line Total</th></tr></thead>
+{% block content %}
+<style>
+  /* Thermal Printer media query */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #receipt-area, #receipt-area * {
+      visibility: visible;
+    }
+    #receipt-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      max-width: 80mm;
+      padding: 0;
+      margin: 0;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+  }
+</style>
+
+<div class="container py-3">
+  <div id="receipt-area" class="card border shadow-sm mx-auto p-3" style="max-width: 420px; font-family: monospace;">
+    
+    <!-- Receipt Header -->
+    <div class="text-center mb-3">
+      <h4 class="fw-bold mb-1">{{ sale.shop.name }}</h4>
+      {% if sale.shop.address %}
+        <p class="small text-muted mb-0">{{ sale.shop.address }}</p>
+      {% endif %}
+      <p class="small text-muted mb-0">
+        {{ sale.shop.state }}
+        {% if sale.shop.gstin %} · <strong>GSTIN:</strong> {{ sale.shop.gstin }}{% endif %}
+      </p>
+    </div>
+
+    <div class="border-top border-bottom py-2 mb-2 small">
+      <div class="d-flex justify-content-between">
+        <span><strong>Invoice #:</strong> {{ sale.id }}</span>
+        <span><strong>Date:</strong> {{ sale.timestamp.strftime('%d/%m/%Y %H:%M') }}</span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span><strong>Cashier:</strong> {{ sale.operator.name }}</span>
+        <span><strong>Mode:</strong> {{ sale.payment_mode }}</span>
+      </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="table table-borderless table-sm small mb-2">
+      <thead class="border-bottom">
+        <tr>
+          <th>Item</th>
+          <th class="text-center">Qty</th>
+          <th class="text-end">Price</th>
+          <th class="text-end">Total</th>
+        </tr>
+      </thead>
       <tbody>
         {% for item in sale.items %}
+        {% set line_subtotal = item.qty * item.price_at_sale %}
         <tr>
-          <td>{{ item.product_name }}</td>
-          <td>{{ item.qty }}</td>
-          <td>₹{{ "%.2f"|format(item.price_at_sale) }}</td>
-          <td>{{ item.tax_rate_at_sale }}%</td>
-          <td>₹{{ "%.2f"|format(item.qty * item.price_at_sale * (1 + item.tax_rate_at_sale/100)) }}</td>
+          <td colspan="4" class="pb-0 fw-bold">{{ item.product_name }}</td>
+        </tr>
+        <tr class="border-bottom">
+          <td class="text-muted pt-0" style="font-size: 0.85em;">GST @ {{ item.tax_rate_at_sale }}%</td>
+          <td class="text-center pt-0">{{ item.qty }}</td>
+          <td class="text-end pt-0">₹{{ "%.2f"|format(item.price_at_sale) }}</td>
+          <td class="text-end pt-0">₹{{ "%.2f"|format(line_subtotal) }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <p class="mb-1">Subtotal: ₹{{ "%.2f"|format(sale.subtotal) }}</p>
-    <p class="mb-1">Tax: ₹{{ "%.2f"|format(sale.tax_total) }}</p>
-    <p class="mb-1">Discount: ₹{{ "%.2f"|format(sale.discount) }}</p>
-    <p class="fw-bold fs-5">Total: ₹{{ "%.2f"|format(sale.total) }}</p>
-    <p class="text-muted">Payment Mode: {{ sale.payment_mode }}</p>
+    <!-- Financial Summary -->
+    <div class="border-top pt-2 small">
+      <div class="d-flex justify-content-between mb-1">
+        <span>Subtotal (Excl. Tax)</span>
+        <span>₹{{ "%.2f"|format(sale.subtotal) }}</span>
+      </div>
 
-    <div class="text-center mt-3">
-      <button class="btn btn-outline-primary btn-sm" onclick="window.print()">Print Receipt</button>
-      <a href="{{ url_for('billing.pos') }}" class="btn btn-primary btn-sm">New Sale</a>
+      {% set half_tax = sale.tax_total / 2 %}
+      <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.9em;">
+        <span>CGST</span>
+        <span>₹{{ "%.2f"|format(half_tax) }}</span>
+      </div>
+      <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.9em;">
+        <span>SGST</span>
+        <span>₹{{ "%.2f"|format(half_tax) }}</span>
+      </div>
+
+      {% if sale.discount > 0 %}
+      <div class="d-flex justify-content-between text-danger mb-1">
+        <span>Discount</span>
+        <span>-₹{{ "%.2f"|format(sale.discount) }}</span>
+      </div>
+      {% endif %}
+
+      <div class="d-flex justify-content-between fw-bold fs-6 border-top border-dark pt-1 mt-1">
+        <span>Grand Total</span>
+        <span>₹{{ "%.2f"|format(sale.total) }}</span>
+      </div>
     </div>
+
+    <!-- Footer Note -->
+    <div class="text-center mt-3 pt-2 border-top">
+      <p class="small text-muted mb-0">Thank you for shopping with us!</p>
+    </div>
+
+    <!-- Actions -->
+    <div class="text-center mt-3 no-print">
+      <button class="btn btn-outline-primary btn-sm me-1" onclick="window.print()">
+        <i class="bi bi-printer"></i> Print Receipt
+      </button>
+      <a href="{{ url_for('billing.pos') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-circle"></i> New Sale
+      </a>
+    </div>
+
   </div>
 </div>
 {% endblock %}
