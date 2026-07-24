@@ -1,11 +1,10 @@
 {% extends "base.html" %}
+
 {% block title %}Staff Management{% endblock %}
 
 {% block content %}
-
 <div class="container-fluid py-4">
 
-    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-1">
@@ -13,22 +12,19 @@
                 Staff Management
             </h2>
             <p class="text-muted mb-0">
-                Manage your staff members, assign roles and monitor status.
+                Create and manage store staff accounts.
             </p>
         </div>
 
-        <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#staffForm">
+        <button class="btn btn-primary" type="button"
+                data-bs-toggle="collapse" data-bs-target="#staffForm">
             <i class="bi bi-plus-circle"></i>
             Add Staff
         </button>
     </div>
 
-
-    <!-- Add Staff Form -->
     <div class="collapse show" id="staffForm">
-
         <div class="card shadow-sm border-0 mb-4">
-
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">
                     <i class="bi bi-person-plus-fill"></i>
@@ -39,43 +35,24 @@
             <div class="card-body">
 
                 <form method="POST">
-                    <input type="hidden" name="action" value="create">
-                    <div class="row g-3">
 
+                    <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                name="name"
-                                placeholder="Enter full name"
-                                required>
+                            <label class="form-label fw-semibold" for="name">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   placeholder="Enter full name" required>
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                class="form-control"
-                                name="email"
-                                placeholder="example@gmail.com"
-                                required>
+                            <label class="form-label fw-semibold" for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="example@gmail.com" required>
                         </div>
 
                         <div class="col-md-2">
-                            <label class="form-label fw-semibold">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                class="form-control"
-                                name="password"
-                                placeholder="********"
-                                required>
+                            <label class="form-label fw-semibold" for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Password" minlength="6" required>
                         </div>
 
                         <div class="col-md-2">
@@ -84,51 +61,44 @@
                             </label>
 
                             <select class="form-select" name="role">
-                                <option value="store_manager">
+
+                                <option value="Store Manager">
                                     Store Manager
                                 </option>
-                                <option value="billing_operator">
-                                    Billing Operator (Cashier)
+
+                                <option value="Cashier">
+                                    Cashier
                                 </option>
+
+                                <option value="Inventory Manager">
+                                    Inventory Manager
+                                </option>
+
                             </select>
                         </div>
 
                         <div class="col-md-2 d-grid align-self-end">
 
-                            <button type="submit" class="btn btn-primary">
+                            <button class="btn btn-primary">
                                 <i class="bi bi-plus-circle"></i>
                                 Add Staff
                             </button>
-
                         </div>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
     </div>
 
-
-
-    <!-- Staff List -->
-
     <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-light">
-
-            <div class="d-flex justify-content-between align-items-center">
-
-                <h5 class="mb-0">
-                    <i class="bi bi-person-lines-fill"></i>
-                    Staff Members
-                </h5>
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-person-lines-fill"></i>
+                Staff Members
+            </h5>
 
                 <span class="badge bg-primary fs-6">
-                    {{ staff_members|length }} Members
+                    {{ staff|length }} Members
                 </span>
 
             </div>
@@ -136,32 +106,22 @@
         </div>
 
         <div class="table-responsive">
-
             <table class="table table-hover align-middle mb-0">
-
                 <thead class="table-dark">
-
                     <tr>
-
                         <th>Name</th>
-
                         <th>Email</th>
-
                         <th>Role</th>
-
                         <th>Status</th>
-
                         <th class="text-center">Actions</th>
-
                     </tr>
-
                 </thead>
 
                 <tbody>
 
-                    {% if staff_members %}
+                    {% if staff %}
 
-                        {% for member in staff_members %}
+                        {% for member in staff %}
 
                         <tr>
 
@@ -187,78 +147,62 @@
 
                             </td>
 
-                            <td>{{ member.email }}</td>
+                        <td>{{ member.email }}</td>
 
                             <td>
 
                                 <span class="badge bg-info">
-                                    {{ member.role.replace('_', ' ').title() }}
+                                    {{ member.role }}
                                 </span>
 
                             </td>
 
                             <td>
 
-                                {% if member.is_active %}
+                                {% if member.active %}
 
                                     <span class="badge bg-success">
                                         Active
                                     </span>
 
                                 {% else %}
-
-                                    <span class="badge bg-danger">
-                                        Inactive
-                                    </span>
-
+                                <button class="btn btn-sm btn-outline-success" type="submit">
+                                    Activate
+                                </button>
                                 {% endif %}
 
                             </td>
 
                             <td class="text-center">
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="action" value="toggle">
-                                    <input type="hidden" name="staff_id" value="{{ member.id }}">
-                                    <button type="submit" class="btn btn-sm {% if member.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
-                                        {% if member.is_active %}Deactivate{% else %}Activate{% endif %}
-                                    </button>
-                                </form>
+
+                                <a href="#"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Edit
+                                </a>
+
+                                <a href="#"
+                                   class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+
                             </td>
 
                         </tr>
-
-                        {% endfor %}
 
                     {% else %}
-
-                        <tr>
-
-                            <td colspan="5" class="text-center py-5">
-
-                                <i class="bi bi-people display-4 text-secondary"></i>
-
-                                <h5 class="mt-3">
-                                    No Staff Added Yet
-                                </h5>
-
-                                <p class="text-muted">
-                                    Start by adding your first staff member.
-                                </p>
-
-                            </td>
-
-                        </tr>
-
-                    {% endif %}
-
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="bi bi-people display-4 text-secondary"></i>
+                            <h5 class="mt-3">No Staff Added Yet</h5>
+                            <p class="text-muted mb-0">
+                                Start by adding your first staff member.
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
 </div>
-
 {% endblock %}

@@ -7,19 +7,27 @@
 
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <div>
             <h2 class="fw-bold">
                 <i class="bi bi-box-seam text-primary"></i>
                 Inventory
             </h2>
-
             <p class="text-muted mb-0">
                 Manage all products in your inventory.
             </p>
         </div>
 
         <div class="d-flex gap-2">
+
+            <button class="btn btn-outline-success">
+                <i class="bi bi-download"></i>
+                Export
+            </button>
+
+            <button class="btn btn-outline-secondary">
+                <i class="bi bi-upload"></i>
+                Import
+            </button>
 
             <a href="{{ url_for('inventory.new_product') }}"
                class="btn btn-primary">
@@ -29,57 +37,29 @@
                 Add Product
 
             </a>
-
         </div>
-
     </div>
 
-
-
-
-
     <!-- Summary Cards -->
-
     <div class="row g-3 mb-4">
-
         <div class="col-lg-3">
-
             <div class="card shadow-sm">
-
                 <div class="card-body">
-
                     <div class="d-flex justify-content-between">
-
                         <div>
-
-                            <small class="text-muted">
-
-                                Products
-
-                            </small>
-
+                            <small class="text-muted">Products</small>
                             <h2>{{ products|length }}</h2>
-
                         </div>
-
                         <i class="bi bi-box-seam fs-1 text-primary"></i>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-lg-3">
-
             <div class="card shadow-sm">
-
                 <div class="card-body">
-
                     <div class="d-flex justify-content-between">
-
                         <div>
 
                             <small class="text-muted">
@@ -88,28 +68,19 @@
 
                             </small>
 
-                            <h2>{{ categories if categories is defined else '—' }}</h2>
+                            <h2>{{ categories }}</h2>
 
                         </div>
-
                         <i class="bi bi-tags fs-1 text-success"></i>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-lg-3">
-
             <div class="card shadow-sm">
-
                 <div class="card-body">
-
                     <div class="d-flex justify-content-between">
-
                         <div>
 
                             <small class="text-muted">
@@ -118,28 +89,19 @@
 
                             </small>
 
-                            <h2>{{ low_stock if low_stock is defined else '—' }}</h2>
+                            <h2>{{ low_stock }}</h2>
 
                         </div>
-
                         <i class="bi bi-exclamation-triangle-fill fs-1 text-warning"></i>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-lg-3">
-
             <div class="card shadow-sm">
-
                 <div class="card-body">
-
                     <div class="d-flex justify-content-between">
-
                         <div>
 
                             <small class="text-muted">
@@ -148,300 +110,159 @@
 
                             </small>
 
-                            <h2>{{ out_stock if out_stock is defined else '—' }}</h2>
+                            <h2>{{ out_stock }}</h2>
 
                         </div>
-
                         <i class="bi bi-x-circle-fill fs-1 text-danger"></i>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
-
-
-
 
     <!-- Search -->
-
     <div class="card shadow-sm mb-4">
-
         <div class="card-body">
-
             <form method="GET">
-
                 <div class="row g-2">
-
                     <div class="col-md-5">
-
-                        <input
-                            type="text"
-                            name="search"
-                            class="form-control"
-                            placeholder="Search product">
-
+                        <input type="text" name="search" class="form-control" placeholder="Search product">
                     </div>
-
                     <div class="col-md-3">
-
                         <select class="form-select" name="category">
-
                             <option value="">All Categories</option>
-
                         </select>
-
                     </div>
-
                     <div class="col-md-2 d-grid">
-
                         <button class="btn btn-primary">
-
-                            <i class="bi bi-search"></i>
-
-                            Search
-
+                            <i class="bi bi-search"></i> Search
                         </button>
-
                     </div>
-
                     <div class="col-md-2 d-grid">
-
-                        <a href="{{ url_for('inventory.list_products') }}"
-                           class="btn btn-outline-secondary">
-
+                        <a href="{{ url_for('inventory.list_products') }}" class="btn btn-outline-secondary">
                             Reset
-
                         </a>
-
                     </div>
-
                 </div>
-
             </form>
-
         </div>
-
     </div>
 
-
-
-
-
     <!-- Product Table -->
-
     <div class="card shadow-sm">
-
         <div class="card-header bg-white">
-
             <div class="d-flex justify-content-between align-items-center">
-
                 <h5 class="mb-0">
-
-                    <i class="bi bi-list"></i>
-
-                    Product List
-
+                    <i class="bi bi-list"></i> Product List
                 </h5>
-
                 <span class="badge bg-primary">
-
                     {{ products|length }} Products
-
                 </span>
-
             </div>
-
         </div>
-
         <div class="table-responsive">
-
             <table class="table table-hover align-middle mb-0">
-
                 <thead class="table-dark">
-
                     <tr>
-
                         <th>Name</th>
-
-                        <th>SKU</th>
-
+                        <th>Batch</th>
                         <th>Category</th>
-
                         <th>Cost</th>
-
                         <th>Price</th>
-
                         <th>Tax</th>
-
                         <th>Stock</th>
-
                         <th>Expiry</th>
-
-                        <th width="150">
-
-                            Action
-
-                        </th>
-
+                        <th width="150">Action</th>
                     </tr>
-
                 </thead>
-
                 <tbody>
-
                     {% if products %}
-
                         {% for product in products %}
-
                         <tr>
-
                             <td>
-
-                                <strong>
-
-                                    {{ product.name }}
-
-                                </strong>
-
+                                <strong>{{ product.name }}</strong>
                             </td>
-
-                            <td>{{ product.sku }}</td>
-
+                            <td>{{ product.batch_no if product.batch_no else '-' }}</td>
                             <td>
-
                                 <span class="badge bg-info">
-
-                                    {{ product.category }}
-
+                                    {{ product.category if product.category else 'N/A' }}
                                 </span>
-
                             </td>
-
                             <td>
 
-                                ₹ {{ product.cost_price }}
+                                ₹ {{ product.cost }}
 
                             </td>
-
                             <td>
 
-                                ₹ {{ product.selling_price }}
+                                ₹ {{ product.price }}
 
                             </td>
-
                             <td>
-
-                                {{ product.tax_rate }}%
-
+                                {{ product.tax_rate if product.tax_rate else 0 }}%
                             </td>
-
                             <td>
 
-                                {% if product.stock_qty == 0 %}
+                                {% if product.stock == 0 %}
 
                                     <span class="badge bg-danger">
-
                                         Out of Stock
-
                                     </span>
 
-                                {% elif product.stock_qty <= product.min_threshold %}
+                                {% elif product.stock <= product.min_stock %}
 
                                     <span class="badge bg-warning text-dark">
 
-                                        {{ product.stock_qty }}
+                                        {{ product.stock }}
 
                                     </span>
-
                                 {% else %}
-
                                     <span class="badge bg-success">
 
-                                        {{ product.stock_qty }}
+                                        {{ product.stock }}
 
                                     </span>
-
                                 {% endif %}
-
                             </td>
-
                             <td>
-
-                                {{ product.expiry_date or "-" }}
-
+                                {{ product.expiry_date if product.expiry_date else "-" }}
                             </td>
-
                             <td>
-
                                 <div class="btn-group">
 
-                                                <a href="{{ url_for('inventory.edit_product', product_id=product.id) }}"
-                                                    class="btn btn-sm btn-outline-primary">
+                                    <a href="{{ url_for('inventory.edit_product', id=product.id) }}"
+                                       class="btn btn-sm btn-outline-primary">
 
                                         <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <a href="{{ url_for('inventory.delete_product', id=product.id) }}"
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Delete this product?')">
+
+                                        <i class="bi bi-trash"></i>
 
                                     </a>
 
-                                    <form method="POST" action="{{ url_for('inventory.archive_product', product_id=product.id) }}" style="display:inline">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Archive this product?')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
                                 </div>
-
                             </td>
-
                         </tr>
-
                         {% endfor %}
-
                     {% else %}
-
                         <tr>
-
                             <td colspan="9" class="text-center py-5">
-
                                 <i class="bi bi-box display-1 text-secondary"></i>
-
-                                <h4 class="mt-3">
-
-                                    No Products Found
-
-                                </h4>
-
-                                <p class="text-muted">
-
-                                    Start by adding your first product.
-
-                                </p>
-
-                                <a href="{{ url_for('inventory.new_product') }}"
-                                   class="btn btn-primary">
-
-                                    <i class="bi bi-plus-circle"></i>
-
-                                    Add Product
-
+                                <h4 class="mt-3">No Products Found</h4>
+                                <p class="text-muted">Start by adding your first product.</p>
+                                <a href="{{ url_for('inventory.new_product') }}" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> Add Product
                                 </a>
-
                             </td>
-
                         </tr>
-
                     {% endif %}
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
 
 </div>

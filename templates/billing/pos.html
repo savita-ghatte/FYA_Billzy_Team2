@@ -2,115 +2,54 @@
 {% block title %}Billing / POS{% endblock %}
 
 {% block content %}
-
 <div class="container-fluid">
 
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <div>
-
             <h2 class="fw-bold">
                 <i class="bi bi-cart-check text-primary"></i>
                 Billing / POS
             </h2>
-
-            <p class="text-muted mb-0">
-                Create bills quickly and manage customer purchases.
-            </p>
-
+            <p class="text-muted mb-0">Create bills quickly and manage customer purchases.</p>
         </div>
-
         <div>
-
-            <span class="badge bg-success fs-6">
-                Cash Counter
-            </span>
-
+            <span class="badge bg-success fs-6">Cash Counter</span>
         </div>
-
     </div>
-
-
 
     <!-- Search Section -->
-
     <div class="card shadow-sm mb-4">
-
         <div class="card-body">
-
             <div class="row g-3">
-
                 <div class="col-md-5">
-
-                    <label class="form-label fw-semibold">
-                        Search Product
-                    </label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Search by product name...">
-
+                    <label class="form-label fw-semibold">Search Product</label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by product name...">
                 </div>
-
                 <div class="col-md-3">
-
-                    <label class="form-label fw-semibold">
-                        Barcode / SKU
-                    </label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Scan barcode">
-
+                    <label class="form-label fw-semibold">Barcode / SKU</label>
+                    <input type="text" id="barcodeInput" class="form-control" placeholder="Scan barcode">
                 </div>
-
                 <div class="col-md-2">
-
-                    <label class="form-label fw-semibold">
-                        Category
-                    </label>
-
-                    <select class="form-select">
-
-                        <option>All</option>
-
+                    <label class="form-label fw-semibold">Category</label>
+                    <select id="categorySelect" class="form-select">
+                        <option value="">All</option>
                     </select>
-
                 </div>
-
                 <div class="col-md-2 d-grid">
-
                     <label class="form-label">&nbsp;</label>
-
-                    <button class="btn btn-primary">
-
-                        <i class="bi bi-search"></i>
-
-                        Search
-
+                    <button type="button" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Search
                     </button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
-
-
-
 
     <div class="row">
 
-        <!-- Products -->
-
-        <div class="col-lg-8">
-
+        <!-- Products List -->
+        <div class="col-lg-7">
             <div class="card shadow-sm">
 
                 <div class="card-header bg-white">
@@ -126,43 +65,28 @@
                         </h5>
 
                         <span class="badge bg-primary">
+
                             {{ products|length }} Products
+
                         </span>
 
                     </div>
 
                 </div>
-
-                <div class="table-responsive">
-
+                <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                     <table class="table table-hover align-middle mb-0">
-
-                        <thead class="table-dark">
-
+                        <thead class="table-dark sticky-top">
                             <tr>
-
                                 <th>Name</th>
-
                                 <th>Price</th>
-
                                 <th>Stock</th>
-
-                                <th width="120">
-                                    Action
-                                </th>
-
+                                <th width="120" class="text-end">Action</th>
                             </tr>
-
                         </thead>
-
                         <tbody>
-
                             {% if products %}
-
                                 {% for product in products %}
-
                                 <tr>
-
                                     <td>
 
                                         <strong>
@@ -172,103 +96,81 @@
                                         <br>
 
                                         <small class="text-muted">
+
                                             {{ product.category }}
+
                                         </small>
 
                                     </td>
 
                                     <td>
 
-                                        ₹ {{ product.selling_price }}
+                                        ₹ {{ product.price }}
 
                                     </td>
 
                                     <td>
 
-                                        {% if product.stock_qty == 0 %}
-                                            <span class="badge bg-danger">Out</span>
-                                        {% elif product.stock_qty < 10 %}
-                                            <span class="badge bg-warning text-dark">{{ product.stock_qty }}</span>
+                                        {% if product.stock==0 %}
+
+                                        <span class="badge bg-danger">
+
+                                            Out
+
+                                        </span>
+
+                                        {% elif product.stock<10 %}
+
+                                        <span class="badge bg-warning text-dark">
+
+                                            {{ product.stock }}
+
+                                        </span>
+
                                         {% else %}
                                             <span class="badge bg-success">{{ product.stock_qty }}</span>
                                         {% endif %}
-
                                     </td>
 
                                     <td>
-                                        <form method="POST" action="{{ url_for('billing.cart_add') }}">
-                                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                                            <input type="hidden" name="qty" value="1">
-                                            <button type="submit" class="btn btn-sm btn-primary">
-                                                <i class="bi bi-plus-circle"></i>
-                                                Add
-                                            </button>
-                                        </form>
+
+                                        <button
+                                            class="btn btn-sm btn-primary">
+
+                                            <i class="bi bi-plus-circle"></i>
+
+                                            Add
+
+                                        </button>
+
                                     </td>
-
                                 </tr>
-
                                 {% endfor %}
-
                             {% else %}
-
-                            <tr>
-
-                                <td colspan="4"
-                                    class="text-center py-5">
-
-                                    <i class="bi bi-box display-3 text-secondary"></i>
-
-                                    <h5 class="mt-3">
-
-                                        No Products Available
-
-                                    </h5>
-
-                                    <p class="text-muted">
-
-                                        Add products to inventory first.
-
-                                    </p>
-
-                                </td>
-
-                            </tr>
-
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <i class="bi bi-box display-3 text-secondary"></i>
+                                        <h5 class="mt-3">No Products Available</h5>
+                                        <p class="text-muted">Add products to inventory first.</p>
+                                    </td>
+                                </tr>
                             {% endif %}
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
         </div>
 
-
-
-        <!-- Cart -->
-
-        <div class="col-lg-4">
-
+        <!-- Cart & Checkout -->
+        <div class="col-lg-5">
             <div class="card shadow-sm">
-
                 <div class="card-header bg-white">
-
                     <h5 class="mb-0">
-
-                        <i class="bi bi-cart-fill text-success"></i>
-
-                        Shopping Cart
-
+                        <i class="bi bi-cart-fill text-success"></i> Shopping Cart
                     </h5>
-
                 </div>
-
                 <div class="card-body">
-                                      {% if cart_lines %}
+                                      {% if cart %}
 
                     <div class="table-responsive mb-3">
 
@@ -289,53 +191,64 @@
 
                             <tbody>
 
-                                {% for item in cart_lines %}
+                                {% for item in cart %}
 
                                 <tr>
 
                                     <td>
 
-                                        <strong>{{ item['product'].name }}</strong>
+                                        <strong>{{ item.product.name }}</strong>
 
                                         <br>
 
                                         <small class="text-muted">
 
-                                            ₹ {{ item['product'].selling_price }}
+                                            ₹ {{ item.product.price }}
 
                                         </small>
 
                                     </td>
 
                                     <td>
-                                        <div class="d-flex align-items-center gap-1">
-                                            <form method="POST" action="{{ url_for('billing.cart_add') }}" style="display:inline;">
-                                                <input type="hidden" name="product_id" value="{{ item['product'].id }}">
-                                                <input type="hidden" name="qty" value="-1">
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                                    <i class="bi bi-dash"></i>
-                                                </button>
-                                            </form>
-                                            <span class="px-2 fw-semibold">{{ item['qty'] }}</span>
-                                            <form method="POST" action="{{ url_for('billing.cart_add') }}" style="display:inline;">
-                                                <input type="hidden" name="product_id" value="{{ item['product'].id }}">
-                                                <input type="hidden" name="qty" value="1">
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                                    <i class="bi bi-plus"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        ₹ {{ item['line_subtotal'] + item['line_tax'] }}
-                                    </td>
-                                    <td>
-                                        <form method="POST" action="{{ url_for('billing.cart_remove') }}" style="display:inline;">
-                                            <input type="hidden" name="product_id" value="{{ item['product'].id }}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
+
+                                        <div class="btn-group btn-group-sm">
+
+                                            <button class="btn btn-outline-secondary">
+
+                                                <i class="bi bi-dash"></i>
+
                                             </button>
-                                        </form>
+
+                                            <button class="btn btn-light">
+
+                                                {{ item.quantity }}
+
+                                            </button>
+
+                                            <button class="btn btn-outline-secondary">
+
+                                                <i class="bi bi-plus"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        ₹ {{ item.total }}
+
+                                    </td>
+
+                                    <td>
+
+                                        <button class="btn btn-sm btn-outline-danger">
+
+                                            <i class="bi bi-trash"></i>
+
+                                        </button>
+
                                     </td>
 
                                 </tr>
@@ -349,116 +262,154 @@
                     </div>
 
                     {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-cart-x display-4 text-secondary"></i>
+                            <h6 class="mt-2">Cart is Empty</h6>
+                            <p class="text-muted small">Add products to begin billing.</p>
+                        </div>
+                    {% endif %}
 
-                    <div class="text-center py-5">
+                    <hr>
 
-                        <i class="bi bi-cart-x display-3 text-secondary"></i>
+                    <div class="mb-3">
 
-                        <h5 class="mt-3">
+                        <label class="form-label fw-semibold">
 
-                            Cart is Empty
+                            Customer Name
 
-                        </h5>
+                        </label>
 
-                        <p class="text-muted">
-
-                            Add products to begin billing.
-
-                        </p>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Walk-in Customer">
 
                     </div>
 
-                    {% endif %}
+                    <div class="mb-3">
 
-                    <form method="POST" action="{{ url_for('billing.checkout') }}">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Customer Name</label>
-                            <input
-                                type="text"
-                                name="customer_name"
-                                class="form-control"
-                                placeholder="Walk-in Customer">
-                        </div>
+                        <label class="form-label fw-semibold">
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Mobile Number</label>
-                            <input
-                                type="text"
-                                name="customer_phone"
-                                class="form-control"
-                                placeholder="Optional">
-                        </div>
+                            Mobile Number
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Discount (₹)</label>
-                            <input
-                                type="number"
-                                name="discount"
-                                class="form-control"
-                                value="0"
-                                min="0"
-                                step="any">
-                        </div>
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Optional">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+
+                            Discount (₹)
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            value="0">
+
+                    </div>
 
                         <hr>
 
-                        <div class="d-flex justify-content-between">
-                            <span>Subtotal</span>
-                            <strong>₹ {{ subtotal }}</strong>
-                        </div>
+                    <div class="d-flex justify-content-between">
 
-                        <div class="d-flex justify-content-between">
-                            <span>Tax</span>
-                            <strong>₹ {{ tax_total }}</strong>
-                        </div>
+                        <span>Subtotal</span>
 
-                        <div class="d-flex justify-content-between">
-                            <span>Discount</span>
-                            <strong>₹ {{ discount|default(0) }}</strong>
-                        </div>
+                        <strong>₹ {{ subtotal }}</strong>
 
-                        <hr>
+                    </div>
 
-                        <div class="d-flex justify-content-between fs-5">
-                            <strong>Grand Total</strong>
-                            <strong class="text-success">₹ {{ total }}</strong>
-                        </div>
+                    <div class="d-flex justify-content-between">
 
-                        <div class="mt-4">
-                            <label class="form-label fw-semibold">Payment Mode</label>
-                            <select name="payment_mode" class="form-select">
-                                <option value="Cash">Cash</option>
-                                <option value="UPI">UPI</option>
-                                <option value="Card">Card</option>
-                                <option value="Net Banking">Net Banking</option>
-                            </select>
-                        </div>
+                        <span>Tax</span>
 
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="bi bi-check-circle-fill"></i>
-                                Complete Sale
-                            </button>
-                        </div>
-                    </form>
+                        <strong>₹ {{ tax }}</strong>
 
-                    <div class="d-grid gap-2 mt-2">
-                        <form method="POST" action="{{ url_for('billing.cart_clear') }}">
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="bi bi-trash"></i>
-                                Clear Cart
-                            </button>
-                        </form>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>Discount</span>
+
+                        <strong>₹ {{ discount }}</strong>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between fs-5">
+
+                        <strong>Grand Total</strong>
+
+                        <strong class="text-success">
+
+                            ₹ {{ grand_total }}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="mt-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Payment Mode
+
+                        </label>
+
+                        <select class="form-select">
+
+                            <option>Cash</option>
+
+                            <option>UPI</option>
+
+                            <option>Card</option>
+
+                            <option>Net Banking</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <button class="btn btn-success btn-lg">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            Complete Sale
+
+                        </button>
+
+                        <button class="btn btn-outline-primary">
+
+                            <i class="bi bi-printer"></i>
+
+                            Print Invoice
+
+                        </button>
+
+                        <button class="btn btn-outline-danger">
+
+                            <i class="bi bi-trash"></i>
+
+                            Clear Cart
+
+                        </button>
+
                     </div>
 
                 </div>
-
             </div>
-
         </div>
 
     </div>
-
 </div>
-
 {% endblock %}
