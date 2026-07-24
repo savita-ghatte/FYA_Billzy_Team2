@@ -21,16 +21,6 @@
 
         <div class="d-flex gap-2">
 
-            <button class="btn btn-outline-success">
-                <i class="bi bi-download"></i>
-                Export
-            </button>
-
-            <button class="btn btn-outline-secondary">
-                <i class="bi bi-upload"></i>
-                Import
-            </button>
-
             <a href="{{ url_for('inventory.new_product') }}"
                class="btn btn-primary">
 
@@ -98,7 +88,7 @@
 
                             </small>
 
-                            <h2>{{ categories }}</h2>
+                            <h2>{{ categories if categories is defined else '—' }}</h2>
 
                         </div>
 
@@ -128,7 +118,7 @@
 
                             </small>
 
-                            <h2>{{ low_stock }}</h2>
+                            <h2>{{ low_stock if low_stock is defined else '—' }}</h2>
 
                         </div>
 
@@ -158,7 +148,7 @@
 
                             </small>
 
-                            <h2>{{ out_stock }}</h2>
+                            <h2>{{ out_stock if out_stock is defined else '—' }}</h2>
 
                         </div>
 
@@ -335,13 +325,13 @@
 
                             <td>
 
-                                ₹ {{ product.cost }}
+                                ₹ {{ product.cost_price }}
 
                             </td>
 
                             <td>
 
-                                ₹ {{ product.price }}
+                                ₹ {{ product.selling_price }}
 
                             </td>
 
@@ -353,7 +343,7 @@
 
                             <td>
 
-                                {% if product.stock == 0 %}
+                                {% if product.stock_qty == 0 %}
 
                                     <span class="badge bg-danger">
 
@@ -361,11 +351,11 @@
 
                                     </span>
 
-                                {% elif product.stock <= product.min_stock %}
+                                {% elif product.stock_qty <= product.min_threshold %}
 
                                     <span class="badge bg-warning text-dark">
 
-                                        {{ product.stock }}
+                                        {{ product.stock_qty }}
 
                                     </span>
 
@@ -373,7 +363,7 @@
 
                                     <span class="badge bg-success">
 
-                                        {{ product.stock }}
+                                        {{ product.stock_qty }}
 
                                     </span>
 
@@ -391,21 +381,18 @@
 
                                 <div class="btn-group">
 
-                                    <a href="{{ url_for('inventory.edit_product', id=product.id) }}"
-                                       class="btn btn-sm btn-outline-primary">
+                                                <a href="{{ url_for('inventory.edit_product', product_id=product.id) }}"
+                                                    class="btn btn-sm btn-outline-primary">
 
                                         <i class="bi bi-pencil-square"></i>
 
                                     </a>
 
-                                    <a href="{{ url_for('inventory.delete_product', id=product.id) }}"
-                                       class="btn btn-sm btn-outline-danger"
-                                       onclick="return confirm('Delete this product?')">
-
-                                        <i class="bi bi-trash"></i>
-
-                                    </a>
-
+                                    <form method="POST" action="{{ url_for('inventory.archive_product', product_id=product.id) }}" style="display:inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Archive this product?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
 
                             </td>

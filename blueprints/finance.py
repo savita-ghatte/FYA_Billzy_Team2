@@ -16,7 +16,10 @@ finance_bp = Blueprint("finance", __name__)
 def sales_ledger():
     """FR-5.1: itemized sales ledger."""
     sales = Sale.query.filter_by(shop_id=current_user.shop_id).order_by(Sale.timestamp.desc()).all()
-    return render_template("finance/sales.html", sales=sales)
+    revenue = sum(s.total for s in sales)
+    tax = sum(s.tax_total for s in sales)
+    discount = sum(s.discount for s in sales)
+    return render_template("finance/sales.html", sales=sales, revenue=revenue, tax=tax, discount=discount)
 
 
 @finance_bp.route("/finance/expenses", methods=["GET", "POST"])
@@ -39,7 +42,8 @@ def expenses():
         return redirect(url_for("finance.expenses"))
 
     expense_list = Expense.query.filter_by(shop_id=current_user.shop_id).order_by(Expense.date.desc()).all()
-    return render_template("finance/expenses.html", expenses=expense_list)
+    total_expense = sum(e.amount for e in expense_list)
+    return render_template("finance/expenses.html", expenses=expense_list, total_expense=total_expense)
 
 
 @finance_bp.route("/finance/tax-report")

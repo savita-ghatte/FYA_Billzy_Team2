@@ -39,7 +39,7 @@
             <div class="card-body">
 
                 <form method="POST">
-
+                    <input type="hidden" name="action" value="create">
                     <div class="row g-3">
 
                         <div class="col-md-3">
@@ -84,25 +84,18 @@
                             </label>
 
                             <select class="form-select" name="role">
-
-                                <option value="Store Manager">
+                                <option value="store_manager">
                                     Store Manager
                                 </option>
-
-                                <option value="Cashier">
-                                    Cashier
+                                <option value="billing_operator">
+                                    Billing Operator (Cashier)
                                 </option>
-
-                                <option value="Inventory Manager">
-                                    Inventory Manager
-                                </option>
-
                             </select>
                         </div>
 
                         <div class="col-md-2 d-grid align-self-end">
 
-                            <button class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-plus-circle"></i>
                                 Add Staff
                             </button>
@@ -135,7 +128,7 @@
                 </h5>
 
                 <span class="badge bg-primary fs-6">
-                    {{ staff|length }} Members
+                    {{ staff_members|length }} Members
                 </span>
 
             </div>
@@ -166,9 +159,9 @@
 
                 <tbody>
 
-                    {% if staff %}
+                    {% if staff_members %}
 
-                        {% for member in staff %}
+                        {% for member in staff_members %}
 
                         <tr>
 
@@ -199,14 +192,14 @@
                             <td>
 
                                 <span class="badge bg-info">
-                                    {{ member.role }}
+                                    {{ member.role.replace('_', ' ').title() }}
                                 </span>
 
                             </td>
 
                             <td>
 
-                                {% if member.active %}
+                                {% if member.is_active %}
 
                                     <span class="badge bg-success">
                                         Active
@@ -223,17 +216,13 @@
                             </td>
 
                             <td class="text-center">
-
-                                <a href="#"
-                                   class="btn btn-sm btn-outline-primary">
-                                    Edit
-                                </a>
-
-                                <a href="#"
-                                   class="btn btn-sm btn-outline-danger">
-                                    Delete
-                                </a>
-
+                                <form method="POST" style="display:inline;">
+                                    <input type="hidden" name="action" value="toggle">
+                                    <input type="hidden" name="staff_id" value="{{ member.id }}">
+                                    <button type="submit" class="btn btn-sm {% if member.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                        {% if member.is_active %}Deactivate{% else %}Activate{% endif %}
+                                    </button>
+                                </form>
                             </td>
 
                         </tr>

@@ -50,7 +50,11 @@ def cart_add():
     cart = _get_cart()
     product_id = request.form["product_id"]
     qty = int(request.form.get("qty", 1))
-    cart[product_id] = cart.get(product_id, 0) + qty
+    new_qty = cart.get(product_id, 0) + qty
+    if new_qty <= 0:
+        cart.pop(product_id, None)
+    else:
+        cart[product_id] = new_qty
     session.modified = True
     return redirect(url_for("billing.pos"))
 
@@ -64,6 +68,17 @@ def cart_remove():
     cart.pop(product_id, None)
     session.modified = True
     return redirect(url_for("billing.pos"))
+
+
+@billing_bp.route("/billing/cart/clear", methods=["POST"])
+@login_required
+@permission_required("billing", "write")
+def cart_clear():
+    session[CART_KEY] = {}
+    session.modified = True
+    flash("Cart cleared.", "info")
+    return redirect(url_for("billing.pos"))
+
 
 
 @billing_bp.route("/billing/checkout", methods=["POST"])

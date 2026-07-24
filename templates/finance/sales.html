@@ -319,18 +319,17 @@
                 {% if sales %}
 
                     {% for sale in sales %}
-
                     <tr>
 
                         <td>{{ sale.id }}</td>
 
-                        <td>{{ sale.created_at }}</td>
+                        <td>{{ sale.timestamp }}</td>
 
                         <td>#INV{{ sale.id }}</td>
 
                         <td>₹ {{ sale.subtotal }}</td>
 
-                        <td>₹ {{ sale.tax }}</td>
+                        <td>₹ {{ sale.tax_total }}</td>
 
                         <td>₹ {{ sale.discount }}</td>
 
@@ -345,7 +344,6 @@
                         </td>
 
                         <td>
-                                                  <td>
 
                             {% if sale.payment_mode == "Cash" %}
 
@@ -385,7 +383,7 @@
 
                         <td>
 
-                            {{ sale.cashier }}
+                            {{ sale.operator.name }}
 
                         </td>
 
@@ -393,17 +391,17 @@
 
                             <div class="btn-group">
 
-                                <button class="btn btn-sm btn-outline-primary">
+                                <a href="{{ url_for('billing.invoice', sale_id=sale.id) }}" class="btn btn-sm btn-outline-primary">
 
                                     <i class="bi bi-eye"></i>
 
-                                </button>
+                                </a>
 
-                                <button class="btn btn-sm btn-outline-success">
+                                <a href="{{ url_for('billing.invoice', sale_id=sale.id) }}" class="btn btn-sm btn-outline-success">
 
                                     <i class="bi bi-printer"></i>
 
-                                </button>
+                                </a>
 
                             </div>
 
