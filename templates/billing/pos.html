@@ -105,30 +105,24 @@
 
                                     <td>
 
-                                        ₹ {{ product.price }}
+                                        ₹ {{ "%.2f"|format(product.selling_price) }}
 
                                     </td>
 
                                     <td>
 
-                                        {% if product.stock==0 %}
+                                        {% if product.stock_qty == 0 %}
 
-                                        <span class="badge bg-danger">
+                                        <span class="badge bg-danger">Out</span>
 
-                                            Out
+                                        {% elif product.stock_qty < 10 %}
 
-                                        </span>
-
-                                        {% elif product.stock<10 %}
-
-                                        <span class="badge bg-warning text-dark">
-
-                                            {{ product.stock }}
-
-                                        </span>
+                                        <span class="badge bg-warning text-dark">{{ product.stock_qty }}</span>
 
                                         {% else %}
+
                                             <span class="badge bg-success">{{ product.stock_qty }}</span>
+
                                         {% endif %}
                                     </td>
 

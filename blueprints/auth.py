@@ -67,17 +67,33 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        if user and user.check_password(password) and user.is_active_flag:
-            login_user(user)
-            session.permanent = True
+        if not user:
+            flash("Invalid credentials.", "danger")
+            return render_template("login.html")
 
-            from flask import current_app
-            current_app.permanent_session_lifetime = timedelta(minutes=30)
+        if not user.check_password(password):
+            flash("Invalid credentials.", "danger")
+            return render_template("login.html")
 
-            flash(f"Welcome back, {user.name}!", "success")
-            return redirect(url_for("dashboard.index"))
+        if not user.is_active_flag:
+            flash("Account is inactive. Contact the administrator.", "danger")
+            return render_template("login.html")
 
-        flash("Invalid credentials or inactive account.", "danger")
+        # Login and set session lifetime
+        login_user(user)
+        session.permanent = True
+
+        from flask import current_app
+        current_app.permanent_session_lifetime = timedelta(minutes=30)
+
+        flash(f"Welcome back, {user.name}!", "success")
+
+        # Respect next parameter if present
+        next_url = request.args.get("next")
+        if next_url:
+            return redirect(next_url)
+
+        return redirect(url_for("dashboard.index"))
 
     return render_template("login.html")
 
