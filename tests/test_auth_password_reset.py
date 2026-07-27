@@ -1,4 +1,7 @@
+import os
 import unittest
+from importlib import reload
+from unittest.mock import patch
 
 from app import create_app
 from extensions import db
@@ -47,6 +50,13 @@ class PasswordResetTests(unittest.TestCase):
         updated_user = db.session.get(User, user.id)
         self.assertTrue(updated_user.check_password("newpass123"))
         self.assertFalse(updated_user.check_password("oldpass123"))
+
+    def test_config_uses_database_uri_from_environment(self):
+        with patch.dict(os.environ, {"BILLZY_DATABASE_URI": "sqlite:///C:/shared/billzy.db"}, clear=False):
+            import config
+
+            reload(config)
+            self.assertEqual(config.Config.SQLALCHEMY_DATABASE_URI, "sqlite:///C:/shared/billzy.db")
 
 
 if __name__ == "__main__":
