@@ -1,1 +1,13 @@
+# Ignore local app/runtime artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite
+*.sqlite3
+instance/*.db
+instance/*.sqlite*
+
+# Keep this local file out of version control
 blueprints/billing.py
