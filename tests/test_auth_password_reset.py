@@ -58,6 +58,14 @@ class PasswordResetTests(unittest.TestCase):
             reload(config)
             self.assertEqual(config.Config.SQLALCHEMY_DATABASE_URI, "sqlite:///C:/shared/billzy.db")
 
+    def test_config_normalizes_windows_path(self):
+        with patch.dict(os.environ, {"BILLZY_DATABASE_URI": "C:\\shared\\billzy.db"}, clear=False):
+            import config
+
+            reload(config)
+            self.assertTrue(config.Config.SQLALCHEMY_DATABASE_URI.startswith("sqlite:///"))
+            self.assertIn("C:/shared/billzy.db", config.Config.SQLALCHEMY_DATABASE_URI)
+
 
 if __name__ == "__main__":
     unittest.main()
