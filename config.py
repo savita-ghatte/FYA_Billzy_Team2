@@ -15,11 +15,24 @@ def normalize_sqlite_uri(uri: str) -> str:
 def get_database_uri():
     raw_uri = (
         os.environ.get("BILLZY_DATABASE_URI")
+        or os.environ.get("BILLZY_DB_URI")
         or os.environ.get("DATABASE_URL")
         or os.environ.get("BILLZY_DB_PATH")
+        or os.environ.get("BILLZY_SHARED_DB_PATH")
     )
+
     if raw_uri:
         return normalize_sqlite_uri(raw_uri)
+
+    shared_paths = [
+        r"C:\\shared\\billzy.db",
+        r"C:\\Billzy\\billzy.db",
+        r"D:\\shared\\billzy.db",
+        r"\\\\shared\\billzy.db",
+    ]
+    for shared_path in shared_paths:
+        if os.path.exists(shared_path):
+            return normalize_sqlite_uri(shared_path)
 
     return "sqlite:///" + os.path.join(BASE_DIR, "instance", "billzy.db")
 

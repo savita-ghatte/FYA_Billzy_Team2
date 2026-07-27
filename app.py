@@ -48,6 +48,7 @@ def create_app():
 
     with app.app_context():
         db_uri = app.config["SQLALCHEMY_DATABASE_URI"]
+        print(f"[Billzy] Database URI: {db_uri}")
         if db_uri.startswith("sqlite:///"):
             sqlite_path = db_uri.replace("sqlite:///", "")
             sqlite_dir = os.path.dirname(sqlite_path)
