@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from pathlib import Path
 
 from flask import Flask, session
 from flask_login import current_user
@@ -46,7 +47,13 @@ def create_app():
         return {"current_user": current_user}
 
     with app.app_context():
-        os.makedirs(os.path.join(os.path.dirname(__file__), "instance"), exist_ok=True)
+        db_uri = app.config["SQLALCHEMY_DATABASE_URI"]
+        if db_uri.startswith("sqlite:///"):
+            sqlite_path = db_uri.replace("sqlite:///", "")
+            sqlite_dir = os.path.dirname(sqlite_path)
+            if sqlite_dir:
+                Path(sqlite_dir).mkdir(parents=True, exist_ok=True)
+
         db.create_all()
         _seed_super_admin()
 
