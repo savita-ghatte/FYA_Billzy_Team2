@@ -13,7 +13,11 @@ def normalize_sqlite_uri(uri: str) -> str:
 
 
 def get_database_uri():
-    raw_uri = os.environ.get("BILLZY_DATABASE_URI") or os.environ.get("DATABASE_URL")
+    raw_uri = (
+        os.environ.get("BILLZY_DATABASE_URI")
+        or os.environ.get("DATABASE_URL")
+        or os.environ.get("BILLZY_DB_PATH")
+    )
     if raw_uri:
         return normalize_sqlite_uri(raw_uri)
 
