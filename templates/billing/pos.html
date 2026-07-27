@@ -133,16 +133,14 @@
                                     </td>
 
                                     <td>
-
-                                        <button
-                                            class="btn btn-sm btn-primary">
-
-                                            <i class="bi bi-plus-circle"></i>
-
-                                            Add
-
-                                        </button>
-
+                                        <form method="POST" action="{{ url_for('billing.cart_add') }}" class="d-inline">
+                                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <input type="hidden" name="qty" value="1">
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-plus-circle"></i>
+                                                Add
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -170,7 +168,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                                      {% if cart %}
+                    {% if cart_lines %}
 
                     <div class="table-responsive mb-3">
 
@@ -191,64 +189,39 @@
 
                             <tbody>
 
-                                {% for item in cart %}
+                                {% for line in cart_lines %}
 
                                 <tr>
 
                                     <td>
 
-                                        <strong>{{ item.product.name }}</strong>
+                                        <strong>{{ line.product.name }}</strong>
 
                                         <br>
 
                                         <small class="text-muted">
 
-                                            ₹ {{ item.product.price }}
+                                            ₹ {{ "%.2f"|format(line.product.selling_price) }}
 
                                         </small>
 
                                     </td>
 
                                     <td>
-
-                                        <div class="btn-group btn-group-sm">
-
-                                            <button class="btn btn-outline-secondary">
-
-                                                <i class="bi bi-dash"></i>
-
-                                            </button>
-
-                                            <button class="btn btn-light">
-
-                                                {{ item.quantity }}
-
-                                            </button>
-
-                                            <button class="btn btn-outline-secondary">
-
-                                                <i class="bi bi-plus"></i>
-
-                                            </button>
-
-                                        </div>
-
+                                        {{ line.qty }}
                                     </td>
 
                                     <td>
-
-                                        ₹ {{ item.total }}
-
+                                        ₹ {{ "%.2f"|format(line.line_subtotal) }}
                                     </td>
 
                                     <td>
-
-                                        <button class="btn btn-sm btn-outline-danger">
-
-                                            <i class="bi bi-trash"></i>
-
-                                        </button>
-
+                                        <form method="POST" action="{{ url_for('billing.cart_remove') }}" class="d-inline">
+                                            <input type="hidden" name="product_id" value="{{ line.product.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
 
                                 </tr>
@@ -322,7 +295,7 @@
 
                         <span>Subtotal</span>
 
-                        <strong>₹ {{ subtotal }}</strong>
+                        <strong>₹ {{ "%.2f"|format(subtotal) }}</strong>
 
                     </div>
 
@@ -330,7 +303,7 @@
 
                         <span>Tax</span>
 
-                        <strong>₹ {{ tax }}</strong>
+                        <strong>₹ {{ "%.2f"|format(tax_total) }}</strong>
 
                     </div>
 
@@ -338,7 +311,7 @@
 
                         <span>Discount</span>
 
-                        <strong>₹ {{ discount }}</strong>
+                        <strong>₹ 0.00</strong>
 
                     </div>
 
@@ -350,61 +323,42 @@
 
                         <strong class="text-success">
 
-                            ₹ {{ grand_total }}
+                            ₹ {{ "%.2f"|format(total) }}
 
                         </strong>
 
                     </div>
 
-                    <div class="mt-4">
+                    <form method="POST" action="{{ url_for('billing.checkout') }}" class="mt-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Payment Mode</label>
+                            <select class="form-select" name="payment_mode">
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Card">Card</option>
+                                <option value="Net Banking">Net Banking</option>
+                            </select>
+                        </div>
 
-                        <label class="form-label fw-semibold">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Discount (₹)</label>
+                            <input type="number" step="0.01" class="form-control" name="discount" value="0">
+                        </div>
 
-                            Payment Mode
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Complete Sale
+                            </button>
+                        </div>
+                    </form>
 
-                        </label>
-
-                        <select class="form-select">
-
-                            <option>Cash</option>
-
-                            <option>UPI</option>
-
-                            <option>Card</option>
-
-                            <option>Net Banking</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="d-grid gap-2 mt-4">
-
-                        <button class="btn btn-success btn-lg">
-
-                            <i class="bi bi-check-circle-fill"></i>
-
-                            Complete Sale
-
-                        </button>
-
-                        <button class="btn btn-outline-primary">
-
-                            <i class="bi bi-printer"></i>
-
-                            Print Invoice
-
-                        </button>
-
-                        <button class="btn btn-outline-danger">
-
+                    <form method="POST" action="{{ url_for('billing.cart_clear') }}" class="mt-2">
+                        <button type="submit" class="btn btn-outline-danger w-100">
                             <i class="bi bi-trash"></i>
-
                             Clear Cart
-
                         </button>
-
-                    </div>
+                    </form>
 
                 </div>
             </div>

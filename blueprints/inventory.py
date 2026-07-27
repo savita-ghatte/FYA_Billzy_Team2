@@ -18,17 +18,38 @@ def parse_product_form(form_data):
     if not name:
         errors.append("Product name is required.")
 
+    # Support both legacy template field names and the model-friendly names
+    cost_value = form_data.get("cost_price")
+    if cost_value is None:
+        cost_value = form_data.get("cost")
+
+    selling_value = form_data.get("selling_price")
+    if selling_value is None:
+        selling_value = form_data.get("price")
+
+    stock_value = form_data.get("stock_qty")
+    if stock_value is None:
+        stock_value = form_data.get("stock")
+
+    min_stock_value = form_data.get("min_threshold")
+    if min_stock_value is None:
+        min_stock_value = form_data.get("min_stock")
+
+    batch_value = form_data.get("batch_no")
+    if batch_value is None:
+        batch_value = form_data.get("batch")
+
     # Numeric conversions with fallbacks
     try:
-        cost_price = float(form_data.get("cost") or 0)
-        selling_price = float(form_data.get("price") or 0)
+        cost_price = float(cost_value or 0)
+        selling_price = float(selling_value or 0)
         tax_rate = float(form_data.get("tax_rate") or 0)
     except ValueError:
         errors.append("Cost price, selling price, and tax rate must be valid numbers.")
 
     try:
-        stock_qty = int(form_data.get("stock") or 0)
-        min_threshold = int(form_data.get("min_stock") or 5)
+        stock_qty = int(stock_value or 0)
+        min_threshold = int(min_stock_value or 5)
     except ValueError:
         errors.append("Stock quantity and minimum stock must be whole numbers.")
 
@@ -51,7 +72,7 @@ def parse_product_form(form_data):
         "tax_rate": tax_rate if 'tax_rate' in locals() else 0.0,
         "stock_qty": stock_qty if 'stock_qty' in locals() else 0,
         "min_threshold": min_threshold if 'min_threshold' in locals() else 5,
-        "batch_no": form_data.get("batch", "").strip(),
+        "batch_no": batch_value.strip() if batch_value else "",
         "expiry_date": expiry_date,
         "description": form_data.get("description", "").strip(),
     }

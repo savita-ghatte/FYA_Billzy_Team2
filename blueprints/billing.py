@@ -39,6 +39,11 @@ def pos():
         }
 
         for pid_str, qty in list(cart.items()):
+            try:
+                qty = int(qty)
+            except (TypeError, ValueError):
+                qty = 1
+
             product = products_by_id.get(int(pid_str))
             # Clean up cart if product no longer exists or doesn't belong to shop
             if not product:
@@ -75,8 +80,16 @@ def pos():
 def cart_add():
     cart = _get_cart()
     product_id_str = request.form.get("product_id")
-    qty = int(request.form.get("qty", 1))
-    cart[product_id] = cart.get(product_id, 0) + qty
+    if not product_id_str or not product_id_str.isdigit():
+        flash("Invalid product selected.", "danger")
+        return redirect(url_for("billing.pos"))
+
+    try:
+        qty = max(1, int(request.form.get("qty", 1)))
+    except ValueError:
+        qty = 1
+
+    cart[product_id_str] = cart.get(product_id_str, 0) + qty
     session.modified = True
     return redirect(url_for("billing.pos"))
 
