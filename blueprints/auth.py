@@ -7,6 +7,7 @@ from extensions import db
 from models import (
     User,
     Shop,
+    ROLE_SUPER_ADMIN,
     ROLE_BUSINESSMAN,
     ROLE_STORE_MANAGER,
     ROLE_BILLING_OPERATOR,
@@ -188,9 +189,24 @@ def profile():
 
 @auth_bp.route("/staff", methods=["GET", "POST"])
 @login_required
-@roles_required(ROLE_BUSINESSMAN)
+@roles_required(ROLE_BUSINESSMAN, ROLE_SUPER_ADMIN)
 def staff():
     allowed_roles = (ROLE_STORE_MANAGER, ROLE_BILLING_OPERATOR)
+    editing_staff_id = request.args.get("edit_id", type=int)
+    editing_staff = None
+
+    if editing_staff_id:
+        editing_staff = (
+            db.session.get(User, editing_staff_id)
+            if editing_staff_id
+            else None
+        )
+        if not editing_staff:
+            flash("Staff member not found.", "danger")
+            editing_staff = None
+        elif current_user.role != ROLE_SUPER_ADMIN and editing_staff.shop_id != current_user.shop_id:
+            flash("You cannot edit this staff member.", "danger")
+            editing_staff = None
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -245,23 +261,81 @@ def staff():
                 db.session.commit()
                 flash("Staff status updated.", "success")
 
+        elif action == "prepare_edit":
+            staff_id = request.form.get("staff_id", type=int)
+            staff_user = db.session.get(User, staff_id) if staff_id else None
+            if not staff_user:
+                flash("Staff member not found.", "danger")
+            elif current_user.role != ROLE_SUPER_ADMIN and staff_user.shop_id != current_user.shop_id:
+                flash("You cannot edit this staff member.", "danger")
+            else:
+                return redirect(url_for("auth.staff", edit_id=staff_user.id))
+
+        elif action == "edit":
+            staff_id = request.form.get("staff_id", type=int)
+            staff_user = db.session.get(User, staff_id) if staff_id else None
+            name = request.form.get("name", "").strip()
+            email = request.form.get("email", "").strip().lower()
+            role = request.form.get("role")
+
+            if not staff_user:
+                flash("Staff member not found.", "danger")
+            elif current_user.role != ROLE_SUPER_ADMIN and staff_user.shop_id != current_user.shop_id:
+                flash("You cannot edit this staff member.", "danger")
+            elif not name or not email:
+                flash("Name and email are required.", "danger")
+            elif role not in allowed_roles:
+                flash("Invalid staff role.", "danger")
+            else:
+                existing_user = User.query.filter(User.email == email, User.id != staff_user.id).first()
+                if existing_user:
+                    flash("Email already in use.", "danger")
+                else:
+                    staff_user.name = name
+                    staff_user.email = email
+                    staff_user.role = role
+                    db.session.commit()
+                    flash("Staff member updated successfully.", "success")
+
+        elif action == "delete":
+            staff_id = request.form.get("staff_id", type=int)
+            staff_user = db.session.get(User, staff_id) if staff_id else None
+            if not staff_user:
+                flash("Staff member not found.", "danger")
+            elif current_user.role != ROLE_SUPER_ADMIN and staff_user.shop_id != current_user.shop_id:
+                flash("You cannot delete this staff member.", "danger")
+            else:
+                db.session.delete(staff_user)
+                db.session.commit()
+                flash("Staff member deleted successfully.", "success")
+
         else:
             flash("Invalid staff action.", "danger")
 
         return redirect(url_for("auth.staff"))
 
-    staff_members = (
-        User.query.filter(
-            User.shop_id == current_user.shop_id,
-            User.role.in_(allowed_roles),
+    if current_user.role == ROLE_SUPER_ADMIN:
+        staff_members = (
+            User.query.filter(
+                User.role.in_(allowed_roles),
+            )
+            .order_by(User.name)
+            .all()
         )
-        .order_by(User.name)
-        .all()
-    )
+    else:
+        staff_members = (
+            User.query.filter(
+                User.shop_id == current_user.shop_id,
+                User.role.in_(allowed_roles),
+            )
+            .order_by(User.name)
+            .all()
+        )
 
     return render_template(
         "staff.html",
         staff=staff_members,
+        editing_staff=editing_staff,
         ROLE_STORE_MANAGER=ROLE_STORE_MANAGER,
         ROLE_BILLING_OPERATOR=ROLE_BILLING_OPERATOR,
     )

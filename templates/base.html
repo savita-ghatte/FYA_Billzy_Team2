@@ -103,9 +103,30 @@
             <div class="d-flex align-items-center gap-3">
 
                 <!-- Notification -->
-                <button class="btn btn-light rounded-circle">
-                    <i class="bi bi-bell"></i>
-                </button>
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-circle position-relative dropdown-toggle"
+                            id="notificationsDropdown"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            data-notifications='{{ session.get("notifications", []) | tojson }}'
+                            onclick="toggleNotificationsMenu(event)">
+                        <i class="bi bi-bell"></i>
+                        <span id="notificationBadge"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            0
+                            <span class="visually-hidden">unread notifications</span>
+                        </span>
+                    </button>
+                    <ul id="notificationsMenu"
+                        class="dropdown-menu dropdown-menu-end shadow"
+                        aria-labelledby="notificationsDropdown"
+                        style="display: none;">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        <li id="notificationsEmptyState"><span class="dropdown-item-text text-muted">No new notifications</span></li>
+                        <li id="notificationsList"></li>
+                    </ul>
+                </div>
 
                 <!-- User -->
                 <div class="dropdown">
@@ -188,6 +209,68 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function updateNotificationsUI() {
+      const badge = document.getElementById('notificationBadge');
+      const emptyState = document.getElementById('notificationsEmptyState');
+      const list = document.getElementById('notificationsList');
+      if (!badge || !emptyState || !list) return;
+
+      const button = document.getElementById('notificationsDropdown');
+      let notifications = [];
+      if (button) {
+        try {
+          notifications = JSON.parse(button.getAttribute('data-notifications') || '[]');
+        } catch (error) {
+          notifications = [];
+        }
+      }
+
+      const unreadCount = notifications.filter(item => !item.read).length;
+      badge.textContent = unreadCount;
+      badge.style.display = unreadCount > 0 ? 'inline-flex' : 'none';
+
+      if (unreadCount > 0) {
+        emptyState.style.display = 'none';
+        list.innerHTML = notifications.map(item => `
+          <li><span class="dropdown-item-text ${item.read ? 'text-muted' : 'fw-semibold'}">${item.message}</span></li>
+        `).join('');
+      } else {
+        emptyState.style.display = 'block';
+        list.innerHTML = '';
+      }
+    }
+
+    function toggleNotificationsMenu(event) {
+      event.preventDefault();
+      const button = document.getElementById('notificationsDropdown');
+      const menu = document.getElementById('notificationsMenu');
+      if (!button || !menu) return;
+
+      const isOpen = menu.style.display === 'block';
+      menu.style.display = isOpen ? 'none' : 'block';
+      button.setAttribute('aria-expanded', String(!isOpen));
+      if (!isOpen) {
+        updateNotificationsUI();
+      }
+    }
+
+    document.addEventListener('click', function (event) {
+      const button = document.getElementById('notificationsDropdown');
+      const menu = document.getElementById('notificationsMenu');
+      if (!button || !menu) return;
+
+      const clickedInside = button.contains(event.target) || menu.contains(event.target);
+      if (!clickedInside) {
+        menu.style.display = 'none';
+        button.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      updateNotificationsUI();
+    });
+  </script>
 
 </body>
 </html>

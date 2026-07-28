@@ -235,6 +235,16 @@ def checkout():
 
         db.session.commit()
 
+        notification = {
+            "message": f"New bill #{sale.id} completed for ₹{total:.2f}",
+            "read": False,
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+        notifications = session.get("notifications", [])
+        notifications.insert(0, notification)
+        session["notifications"] = notifications
+        session.modified = True
+
         # Clear cart only after successful DB commit
         session[CART_KEY] = {}
         session.modified = True

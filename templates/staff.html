@@ -27,43 +27,46 @@
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">
                     <i class="bi bi-person-plus-fill"></i>
-                    Add New Staff Member
+                    {% if editing_staff %}Edit Staff Member{% else %}Add New Staff Member{% endif %}
                 </h5>
             </div>
 
             <div class="card-body">
                 <form method="POST">
+                    {% if editing_staff %}
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="staff_id" value="{{ editing_staff.id }}">
+                    {% else %}
                     <input type="hidden" name="action" value="create">
+                    {% endif %}
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label fw-semibold" for="name">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter full name" required>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter full name" value="{{ editing_staff.name if editing_staff else '' }}" required>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label fw-semibold" for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com" value="{{ editing_staff.email if editing_staff else '' }}" required>
                         </div>
 
                         <div class="col-md-2">
                             <label class="form-label fw-semibold" for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" minlength="6" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" minlength="6" {% if not editing_staff %}required{% endif %}>
                         </div>
 
                         <div class="col-md-2">
                             <label class="form-label fw-semibold">Role</label>
                             <select class="form-select" name="role">
-                               <option value="store_manager">Store Manager</option>
-                                <option value="store_manager">Desk Operator</option>
-                               <option value="store_manager">Cleaning Staff</option>
-                                <option value="store_manager">Cashier</option>
+                                <option value="store_manager" {% if editing_staff and editing_staff.role == 'store_manager' %}selected{% endif %}>Store Manager</option>
+                                <option value="billing_operator" {% if editing_staff and editing_staff.role == 'billing_operator' %}selected{% endif %}>Billing Operator</option>
                             </select>
                         </div>
 
                         <div class="col-md-2 d-grid align-self-end">
                             <button class="btn btn-primary" type="submit">
-                                <i class="bi bi-plus-circle"></i>
-                                Add Staff
+                                <i class="bi bi-{% if editing_staff %}save{% else %}plus-circle{% endif %}"></i>
+                                {% if editing_staff %}Save Changes{% else %}Add Staff{% endif %}
                             </button>
                         </div>
                     </div>
@@ -131,8 +134,16 @@
                             </td>
 
                             <td class="text-center">
-                                <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                                <form method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="prepare_edit">
+                                    <input type="hidden" name="staff_id" value="{{ member.id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Edit</button>
+                                </form>
+                                <form method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="staff_id" value="{{ member.id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this staff member?')">Delete</button>
+                                </form>
                             </td>
                         </tr>
                         {% endfor %}
