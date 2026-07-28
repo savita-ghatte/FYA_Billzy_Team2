@@ -201,7 +201,7 @@ Welcome Back
 Sign in to continue to Billzy
 </p>
 
-<form method="POST">
+<form method="POST" action="{{ url_for('auth.login') }}">
 
 <div class="mb-3">
 
@@ -269,7 +269,7 @@ Forgot password?
 
 <div class="d-grid">
 
-<button class="btn btn-primary btn-login">
+<button type="submit" class="btn btn-primary btn-login">
 
 <i class="bi bi-box-arrow-in-right"></i>
 

@@ -142,6 +142,46 @@ def forgot_password():
     return render_template("forgot_password.html")
 
 
+@auth_bp.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        phone = request.form.get("phone", "").strip()
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        if not name or not email:
+            flash("Name and email are required.", "danger")
+            return redirect(url_for("auth.profile"))
+
+        existing_user = User.query.filter(User.email == email, User.id != current_user.id).first()
+        if existing_user:
+            flash("An account with this email already exists.", "danger")
+            return redirect(url_for("auth.profile"))
+
+        if new_password or confirm_password:
+            if len(new_password) < 6:
+                flash("Password must be at least 6 characters long.", "danger")
+                return redirect(url_for("auth.profile"))
+            if new_password != confirm_password:
+                flash("New passwords do not match.", "danger")
+                return redirect(url_for("auth.profile"))
+            current_user.set_password(new_password)
+
+        current_user.name = name
+        current_user.email = email
+        current_user.phone = phone
+        db.session.commit()
+
+        flash("Profile updated successfully.", "success")
+        return redirect(url_for("auth.profile"))
+
+    shop = Shop.query.get(current_user.shop_id) if current_user.shop_id else None
+    return render_template("profile.html", shop=shop)
+
+
 @auth_bp.route("/staff", methods=["GET", "POST"])
 @login_required
 @roles_required(ROLE_BUSINESSMAN)

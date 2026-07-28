@@ -51,6 +51,38 @@ class PasswordResetTests(unittest.TestCase):
         self.assertTrue(updated_user.check_password("newpass123"))
         self.assertFalse(updated_user.check_password("oldpass123"))
 
+    def test_profile_page_loads_and_updates_user_info(self):
+        user = User(name="Test User", email="user@example.com", role="businessman")
+        user.set_password("oldpass123")
+        db.session.add(user)
+        db.session.commit()
+
+        with self.client.session_transaction() as session:
+            session["_user_id"] = str(user.id)
+            session["_fresh"] = True
+
+        response = self.client.get("/profile")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"My Profile", response.get_data())
+
+        response = self.client.post(
+            "/profile",
+            data={
+                "name": "Updated Name",
+                "email": "updated@example.com",
+                "phone": "1234567890",
+            },
+            follow_redirects=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Profile updated successfully", response.get_data())
+
+        updated_user = db.session.get(User, user.id)
+        self.assertEqual(updated_user.name, "Updated Name")
+        self.assertEqual(updated_user.email, "updated@example.com")
+        self.assertEqual(updated_user.phone, "1234567890")
+
     def test_config_uses_database_uri_from_environment(self):
         with patch.dict(os.environ, {"BILLZY_DATABASE_URI": "sqlite:///C:/shared/billzy.db"}, clear=False):
             import config
