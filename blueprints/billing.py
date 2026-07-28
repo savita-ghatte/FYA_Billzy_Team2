@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_required, current_user
+from sqlalchemy import or_
 
 from extensions import db
 from models import Product, Sale, SaleItem
@@ -21,7 +22,40 @@ def _get_cart():
 @permission_required("billing", "read")
 def pos():
     cart = _get_cart()
-    products = Product.query.filter_by(shop_id=current_user.shop_id, archived=False).all()
+    search_term = request.args.get("search", "").strip()
+    category_filter = request.args.get("category", "").strip()
+
+    products_query = Product.query.filter_by(shop_id=current_user.shop_id, archived=False)
+
+    if search_term:
+        products_query = products_query.filter(
+            or_(
+                Product.name.ilike(f"%{search_term}%"),
+                Product.category.ilike(f"%{search_term}%"),
+                Product.sku.ilike(f"%{search_term}%"),
+            )
+        )
+
+    if category_filter:
+        products_query = products_query.filter_by(category=category_filter)
+
+    products = products_query.order_by(Product.name).all()
+
+    categories = []
+    seen_categories = set()
+    category_rows = (
+        db.session.query(Product.category)
+        .filter_by(shop_id=current_user.shop_id, archived=False)
+        .distinct()
+        .order_by(Product.category)
+        .all()
+    )
+    for (category,) in category_rows:
+        if category:
+            category = category.strip()
+            if category and category not in seen_categories:
+                seen_categories.add(category)
+                categories.append(category)
 
     cart_lines = []
     subtotal = 0.0
@@ -69,8 +103,15 @@ def pos():
     total = round(subtotal + tax_total, 2)
 
     return render_template(
-        "billing/pos.html", products=products, cart_lines=cart_lines,
-        subtotal=subtotal, tax_total=tax_total, total=total,
+        "billing/pos.html",
+        products=products,
+        cart_lines=cart_lines,
+        subtotal=subtotal,
+        tax_total=tax_total,
+        total=total,
+        search_term=search_term,
+        category_filter=category_filter,
+        categories=categories,
     )
 
 

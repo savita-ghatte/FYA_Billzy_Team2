@@ -21,28 +21,35 @@
     <!-- Search Section -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold">Search Product</label>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by product name...">
+            <form method="GET">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold">Search Product</label>
+                        <input
+                            type="text"
+                            name="search"
+                            id="searchInput"
+                            class="form-control"
+                            placeholder="Search by product name..."
+                            value="{{ search_term }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Category</label>
+                        <select name="category" id="categorySelect" class="form-select">
+                            <option value="" {{ 'selected' if not category_filter else '' }}>All</option>
+                            {% for category in categories %}
+                                <option value="{{ category }}" {{ 'selected' if category_filter == category else '' }}>{{ category }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Barcode / SKU</label>
-                    <input type="text" id="barcodeInput" class="form-control" placeholder="Scan barcode">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-semibold">Category</label>
-                    <select id="categorySelect" class="form-select">
-                        <option value="">All</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-grid">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" class="btn btn-primary">
-                        <i class="bi bi-search"></i> Search
-                    </button>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 
