@@ -1,10 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import re
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, Response
 from flask_login import login_required, current_user
+from sqlalchemy import or_
 
 from extensions import db
-from models import Sale, Expense
+from models import Sale, Expense, User
 from decorators import permission_required
 
 finance_bp = Blueprint("finance", __name__)
@@ -14,12 +16,51 @@ finance_bp = Blueprint("finance", __name__)
 @login_required
 @permission_required("finance", "read")
 def sales_ledger():
-    """FR-5.1: itemized sales ledger."""
-    sales = Sale.query.filter_by(shop_id=current_user.shop_id).order_by(Sale.timestamp.desc()).all()
+    """FR-5.1: itemized sales ledger with search and filters."""
+    search_term = request.args.get("search", "").strip()
+    date_filter = request.args.get("date", "").strip()
+    payment_mode = request.args.get("payment_mode", "All Payment Modes").strip()
+
+    query = Sale.query.filter_by(shop_id=current_user.shop_id)
+
+    if search_term:
+        search_filters = [Sale.operator.has(User.name.ilike(f"%{search_term}%"))]
+        if search_term.isdigit():
+            search_filters.append(Sale.id == int(search_term))
+        else:
+            digits = re.search(r"\d+", search_term)
+            if digits:
+                search_filters.append(Sale.id == int(digits.group(0)))
+
+        query = query.filter(or_(*search_filters))
+
+    if date_filter:
+        try:
+            parsed_date = datetime.strptime(date_filter, "%Y-%m-%d").date()
+            query = query.filter(
+                Sale.timestamp >= datetime.combine(parsed_date, datetime.min.time()),
+                Sale.timestamp < datetime.combine(parsed_date + timedelta(days=1), datetime.min.time()),
+            )
+        except ValueError:
+            pass
+
+    if payment_mode and payment_mode != "All Payment Modes":
+        query = query.filter_by(payment_mode=payment_mode)
+
+    sales = query.order_by(Sale.timestamp.desc()).all()
     revenue = sum(s.total for s in sales)
     tax = sum(s.tax_total for s in sales)
     discount = sum(s.discount for s in sales)
-    return render_template("finance/sales.html", sales=sales, revenue=revenue, tax=tax, discount=discount)
+    return render_template(
+        "finance/sales.html",
+        sales=sales,
+        revenue=revenue,
+        tax=tax,
+        discount=discount,
+        search_term=search_term,
+        date_filter=date_filter,
+        payment_mode=payment_mode,
+    )
 
 
 @finance_bp.route("/finance/expenses", methods=["GET", "POST"])

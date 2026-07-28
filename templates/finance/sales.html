@@ -194,8 +194,10 @@
 
                         <input
                             type="text"
+                            name="search"
                             class="form-control"
-                            placeholder="Search Invoice or Cashier">
+                            placeholder="Search Invoice or Cashier"
+                            value="{{ search_term }}">
 
                     </div>
 
@@ -203,21 +205,23 @@
 
                         <input
                             type="date"
-                            class="form-control">
+                            name="date"
+                            class="form-control"
+                            value="{{ date_filter }}">
 
                     </div>
 
                     <div class="col-md-3">
 
-                        <select class="form-select">
+                        <select class="form-select" name="payment_mode">
 
-                            <option>All Payment Modes</option>
+                            <option {{ 'selected' if payment_mode == 'All Payment Modes' else '' }}>All Payment Modes</option>
 
-                            <option>Cash</option>
+                            <option value="Cash" {{ 'selected' if payment_mode == 'Cash' else '' }}>Cash</option>
 
-                            <option>UPI</option>
+                            <option value="UPI" {{ 'selected' if payment_mode == 'UPI' else '' }}>UPI</option>
 
-                            <option>Card</option>
+                            <option value="Card" {{ 'selected' if payment_mode == 'Card' else '' }}>Card</option>
 
                         </select>
 
