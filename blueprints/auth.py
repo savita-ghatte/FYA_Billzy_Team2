@@ -31,6 +31,10 @@ def register():
             flash("An account with this email already exists.", "danger")
             return redirect(url_for("auth.register"))
 
+        if phone and (not phone.isdigit() or len(phone) != 10):
+            flash("Phone number must be exactly 10 digits.", "danger")
+            return redirect(url_for("auth.register"))
+
         user = User(
             name=name,
             email=email,
